@@ -1,0 +1,14 @@
+[package]
+name = "sol"
+version = "0.1.0"
+edition = "2024"
+
+# AHC 提出は単一 .rs ファイル(外部クレート不可)。依存は足さない。
+[dependencies]
+
+# ローカル実行を速く＝時間律速の探索で有利。提出はAtCoder側がコンパイルするので影響なし。
+[profile.release]
+opt-level = 3
+# lto/codegen-units はコンパイルを遅くする。イテレーション優先で既定のまま。必要なら:
+# lto = true
+# codegen-units = 1

@@ -1,0 +1,8 @@
+/target
+/tools
+/problem
+/out
+/rep
+*.html
+*.pdf
+scripts/__pycache__

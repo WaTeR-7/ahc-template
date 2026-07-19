@@ -1,0 +1,48 @@
+#!/usr/bin/env bash
+# ソルバを seed 掃引して採点集計。
+# Usage: scripts/test.sh <bin_name> [num_seeds]
+#   例:  scripts/test.sh 01_greedy 100
+#
+# 前提:
+#   ・入力    : tools/in/0000.txt ... (公式generatorで生成しておく)
+#   ・採点器  : 下の SCORER を各コンテストに合わせて編集(vis/tester など)。
+#              SCORER <in> <out> が "Score = N" 等を出力する想定。
+set -euo pipefail
+cd "$(dirname "$0")/.."
+
+BIN="${1:?usage: test.sh <bin_name> [num_seeds]}"
+NUM="${2:-100}"
+# ★コンテストごとに編集: 採点コマンド。cargo-compete でない公式 tools の採点器を指す。
+SCORER="${SCORER:-./tools/target/release/vis}"
+
+cargo build --release --bin "$BIN" >/dev/null 2>&1
+SOL="./target/release/$BIN"
+mkdir -p out
+
+total=0; sumT=0; fails=0; worst=999999999; worst_seed=-1; maxms=0
+for ((s=0; s<NUM; s++)); do
+  in=$(printf "tools/in/%04d.txt" "$s")
+  outf=$(printf "out/%04d.txt" "$s")
+  [ -f "$in" ] || { echo "missing $in"; continue; }
+  t0=$(date +%s%3N)
+  "$SOL" < "$in" > "$outf"
+  t1=$(date +%s%3N); dt=$((t1-t0)); [ "$dt" -gt "$maxms" ] && maxms=$dt
+  T=$(wc -l < "$outf")
+  line=$("$SCORER" "$in" "$outf" 2>/dev/null || true)
+  score=$(echo "$line" | grep -oE '[0-9]+' | tail -1)
+  if [ -z "${score:-}" ] || [ "$score" -eq 0 ]; then
+    echo "seed $s: FAIL ($line)"; fails=$((fails+1)); continue
+  fi
+  total=$((total+score)); sumT=$((sumT+T))
+  if [ "$score" -lt "$worst" ]; then worst=$score; worst_seed=$s; fi
+done
+
+echo "-------------------------------------"
+echo "bin          : $BIN"
+echo "seeds        : $NUM   fails: $fails"
+echo "total score  : $total"
+echo "avg score    : $(( total / (NUM>0?NUM:1) ))"
+echo "est(150)     : $(( total * 150 / (NUM>0?NUM:1) ))   # 150ケース合計の外挿目安"
+echo "avg T(lines) : $(( sumT / (NUM>0?NUM:1) ))"
+echo "worst        : seed $worst_seed score $worst"
+echo "max time(ms) : $maxms"
