@@ -1,6 +1,7 @@
 /target
 /tools
-/problem
+/problem/*
+!/problem/.gitkeep
 /out
 /rep
 *.html
