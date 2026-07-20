@@ -6,6 +6,5 @@
 #![allow(dead_code, unused)]
 
 include!("io.rs");
-include!("interactive.rs");
 include!("rng.rs");
 include!("timer.rs");

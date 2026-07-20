@@ -4,13 +4,17 @@
 //   ・cp src/bin/00_base.rs src/bin/NN_<approach>.rs して各手法を書く(過去版は絶対に上書きしない)。
 //   ・部品を足すときは lib/<name>.rs の `mod` ブロックを丸ごと貼る。**lib/ が各部品の正**。
 //     下の io/rng/timer は毎回要るので貼り込んだ最小スタート(コピー元は lib/)。
-//     ※ 対話(リアクティブ)問題は io(バッチ)ではなく lib/interactive.rs を貼る。
+//     ※ io には バッチ入力 Scanner / 対話入力 Interactor / 共通出力 Out がある。対話問題は Interactor を使う。
 //   ・lib/ は cargo の lib ターゲット(ahc_lib)なので `cargo check` / `cargo test` で通常どおり検証できる
 //     (解答は use せずコピペ ── 自己完結でそのまま提出でき、その場で改造もできる)。
 
 // ===== lib/io.rs =====
 mod io {
-    use std::io::Read;
+    use std::collections::VecDeque;
+    use std::fmt::Display;
+    use std::io::{BufRead, Read, Write};
+
+    /// バッチ入力: stdin を全部読んでトークン列にする(高速)。対話問題では使わない。
     pub struct Scanner {
         it: std::str::SplitAsciiWhitespace<'static>,
     }
@@ -29,6 +33,51 @@ mod io {
         }
         pub fn vec<T: std::str::FromStr>(&mut self, n: usize) -> Vec<T> {
             (0..n).map(|_| self.next()).collect()
+        }
+    }
+
+    /// 対話入力: 必要になった時だけ次の行を読む(EOF を待って固まらない)。出力は Out を使う。
+    pub struct Interactor {
+        reader: std::io::BufReader<std::io::Stdin>,
+        toks: VecDeque<String>,
+    }
+    impl Interactor {
+        pub fn new() -> Self {
+            Interactor { reader: std::io::BufReader::new(std::io::stdin()), toks: VecDeque::new() }
+        }
+        pub fn next<T: std::str::FromStr>(&mut self) -> T {
+            loop {
+                if let Some(t) = self.toks.pop_front() {
+                    return t.parse().ok().expect("parse error");
+                }
+                let mut line = String::new();
+                if self.reader.read_line(&mut line).expect("read error") == 0 {
+                    panic!("EOF: 対話相手からの入力が尽きた");
+                }
+                self.toks.extend(line.split_whitespace().map(str::to_owned));
+            }
+        }
+        pub fn vec<T: std::str::FromStr>(&mut self, n: usize) -> Vec<T> {
+            (0..n).map(|_| self.next()).collect()
+        }
+    }
+
+    /// 共通出力: バッチも対話も使える。対話では書くたびに flush() すること。
+    pub struct Out {
+        w: std::io::BufWriter<std::io::Stdout>,
+    }
+    impl Out {
+        pub fn new() -> Self {
+            Out { w: std::io::BufWriter::new(std::io::stdout()) }
+        }
+        pub fn print(&mut self, s: impl Display) {
+            write!(self.w, "{}", s).unwrap();
+        }
+        pub fn println(&mut self, s: impl Display) {
+            writeln!(self.w, "{}", s).unwrap();
+        }
+        pub fn flush(&mut self) {
+            self.w.flush().unwrap();
         }
     }
 }
@@ -80,7 +129,8 @@ mod timer {
 
 fn main() {
     let timer = timer::Timer::new();
-    let mut sc = io::Scanner::new();
+    let mut sc = io::Scanner::new(); // 対話問題なら io::Interactor::new()
+    let mut out = io::Out::new();
     let mut rng = rng::Rng::new(0x1234_5678_9ABC_DEF0);
 
     // ---- 入力 ----
@@ -97,13 +147,10 @@ fn main() {
     // }
     // eprintln!("iters={} ms={}", iters, timer.ms());
 
-    // ---- 出力 ----
-    use std::io::Write;
-    let out = std::io::stdout();
-    let mut o = std::io::BufWriter::new(out.lock());
-    // writeln!(o, "{}", ans).unwrap();
-    o.flush().unwrap();
+    // ---- 出力(対話では書くたびに out.flush()) ----
+    // out.println(ans);
+    out.flush();
 
     // 未使用警告抑制(実装時に削除)
-    let _ = (&mut sc, &mut rng, &timer);
+    let _ = (&mut sc, &mut rng, &timer, &mut out);
 }
