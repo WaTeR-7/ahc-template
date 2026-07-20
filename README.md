@@ -42,6 +42,7 @@ python3 scripts/measure.py results.csv       # 赤字の構造を測る
 
 | ファイル | 役割 |
 |---|---|
+| `CLAUDE.md` | AIエージェント向け作業ルール(反復はユーザー主導・1approach=1file 等) |
 | `src/bin/00_base.rs` | 高速I/O・タイマー(AHC_TL)・splitmix RNG 内蔵の骨格 |
 | `scripts/fetch_tools.sh` | 保存HTML→tools.zip をDL/展開/build/入力生成(人手はページ保存のみ) |
 | `scripts/test.sh` | `<bin> [num]` で seed 掃引+採点(SCORER を編集) |
