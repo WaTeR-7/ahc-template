@@ -34,7 +34,7 @@ python3 scripts/measure.py results.csv       # 赤字の構造を測る
 > `img.atcoder.jp/<contest>/<token>.zip`(公開CDN・ログイン不要)が埋まっている。tools のDL/展開/build/
 > 入力生成は `fetch_tools.sh` が全部やる。
 
-## Claude Code(AI エージェント)前提
+## AIエージェントの前提
 
 このテンプレは **Claude Code(AI エージェント)で回す**前提で組んである。
 
@@ -43,7 +43,7 @@ python3 scripts/measure.py results.csv       # 赤字の構造を測る
 - **規約ガイド**: AHC の AI 利用規約は急速に変化する(縮小方向)ので、恒久テンプレに焼き込まない。
   その回の規約を **`problem/ai_guideline.txt` に人が貼る** → `CLAUDE.md §0` がインポートする。
   **未記入なら AI は「規約未読」とだけ返して全停止**(fail-closed で規約違反を防ぐ)。
-- **Claude Code を使う方針そのもの**: 「AI にどこまで任せるか(自動反復の可否など)」は**その回の規約が決める**。
+- **AIに任せる範囲**: 「AI にどこまで任せるか(自動反復の可否など)」は**その回の規約が決める**。
   規約に従い、規約が触れない範囲はユーザーが主導する。規約が AI 利用を禁じるなら、AI は作業しない。
 
 ## 中身
