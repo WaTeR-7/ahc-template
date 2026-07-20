@@ -2,6 +2,15 @@
 
 ABC(cargo-compete)とはワークフローが別なので分離。**コンテストごとに独立 git リポジトリ**。
 
+## 初回セットアップ (clone)
+
+新しいマシンでは、このテンプレを `~/ahc/template` に clone しておく(以降 `new.sh` がここを雛形に使う)。
+
+```sh
+mkdir -p ~/ahc
+git clone https://github.com/WaTeR-7/ahc-template.git ~/ahc/template
+```
+
 ## 使い方
 
 ```sh
