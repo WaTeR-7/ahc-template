@@ -2,9 +2,6 @@
 
 ABC(cargo-compete)とはワークフローが別なので分離。**コンテストごとに独立 git リポジトリ**。
 
-> **公開方針**: このテンプレ(`ahc-template`)**のみ public**。**各 contest repo は private** にする。
-> contest repo は `problem/`(AtCoder の問題文=著作物)を追跡するため、public 化すると再配布になる。
-
 ## 初回セットアップ (clone)
 
 新しいマシンでは、このテンプレを `~/ahc/template` に clone しておく(以降 `new.sh` がここを雛形に使う)。
@@ -47,8 +44,8 @@ python3 scripts/measure.py results.csv       # 赤字の構造を測る
 - **1アプローチ=1ファイル**(NN_name.rs) → 動く版を絶対に失わない。
 - **LOG.md** が背骨。§0 序盤チェックリスト(測定優先・構造から考える)を毎回踏む。
 - **独立リポジトリ** → `git add .` が素直、code-review/ultrareview もリポジトリ単位で綺麗。
-- **contest repo は private / template のみ public** → problem/(問題文=著作物)を追跡でき、AI が clone
-  だけで自己完結(別マシン・クラウドエージェントでも問題文を再取得せず作業できる)。
+- **contest repo は private**(理由はライセンス節) → problem/ を追跡でき、AI が clone だけで自己完結
+  (別マシン・クラウドエージェントでも問題文を再取得せず作業できる)。
 
 ## 中身
 
@@ -71,6 +68,9 @@ python3 scripts/measure.py results.csv       # 赤字の構造を測る
   でパブリックドメインに提供する(**帰属表示不要**・自由利用)。
 - ただし CC0 が及ぶのは**著者オリジナルの寄与のみ**。**第三者由来の素材**(他者のブログ/editorial の本文・
   図・コード片)は各元著者の権利のもとにあり、**CC0 の対象外**(勝手に再ライセンスはできない)。
+- **contest repo はそのまま public にできない**: `problem/` に AtCoder の問題文(著作物)を追跡するため、
+  public 化は**第三者著作物の再配布**になる。よって **contest repo は private**、public はこのテンプレ
+  (`ahc-template`)のみ。
 - **知見の載せ方**: 他人発のコツ・解法は**自分の言葉で言い換え＋出典を明記**して書く
   (アイデア・技法は著作権対象外だが、**逐語コピーは避ける**)。やむを得ず引用する時は短く・出典明記・
   「CC0対象外」と注記。
