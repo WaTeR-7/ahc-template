@@ -6,7 +6,6 @@
 // 使い方(対話)  : let mut it=io::Interactor::new(); let mut o=io::Writer::new(); let x:i32=it.next(); o.putln(q); o.flush();
 mod io {
     use std::collections::VecDeque;
-    use std::fmt::Display;
     use std::io::{BufRead, Read, Write};
 
     /// バッチ入力: stdin を全部読んでトークン列にする(高速)。対話問題では使わない。
@@ -57,10 +56,10 @@ mod io {
         }
     }
 
-    /// 共通出力(バッチ/対話)。**core::fmt を回避**して速い:
-    ///   整数=手書き itoa / str・char=バイト直書き / float=put_prec or 既定 {:.12}。
+    /// 共通出力(バッチ/対話)。**core::fmt を使わず**速い(整数=手書き itoa / str・char=バイト直書き)。
     /// put/putln/sp/nl/put_iter はチェイン可。stdout を一度だけ lock し BufWriter で束ねる
     /// (drop 時に自動 flush。対話は書くたび flush() すること)。
+    /// ※ 浮動小数の出力は AHC では稀なので未対応。必要なら Wr を f64 に実装 or put(x.to_string())。
     pub struct Writer {
         w: std::io::BufWriter<std::io::StdoutLock<'static>>,
     }
@@ -98,16 +97,6 @@ mod io {
                 x.wr(&mut self.w);
                 first = false;
             }
-            self
-        }
-        /// 小数を prec 桁の固定小数点で(float は fmt 経由。put の既定 float は {:.12})。
-        pub fn put_prec<T: Display>(&mut self, x: T, prec: usize) -> &mut Self {
-            let _ = write!(self.w, "{:.*}", prec, x);
-            self
-        }
-        /// 任意の Display を fmt 経由で出力するエスケープハッチ(遅い。整数/文字列は put を使う)。
-        pub fn put_fmt<T: Display>(&mut self, x: T) -> &mut Self {
-            let _ = write!(self.w, "{}", x);
             self
         }
         /// flush(対話では毎回。バッチは drop 時にも自動)。
@@ -173,13 +162,4 @@ mod io {
             let _ = w.write_all(self.encode_utf8(&mut b).as_bytes());
         }
     }
-    /// float は既定で {:.12} 固定小数点(桁数を変えるなら put_prec)。
-    macro_rules! wr_float {
-        ($($t:ty),*) => {$(
-            impl Wr for $t {
-                fn wr<W: Write>(&self, w: &mut W) { let _ = write!(w, "{:.12}", self); }
-            }
-        )*};
-    }
-    wr_float!(f32, f64);
 }
