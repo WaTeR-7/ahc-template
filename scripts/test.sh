@@ -7,7 +7,8 @@
 #   ・入力    : tools/in/0000.txt ... (公式generatorで生成しておく)
 #   ・採点器  : 下の SCORER を各コンテストに合わせて編集(vis/tester など)。
 #              SCORER <in> <out> が "Score = N" 等を出力する想定。
-#   ・汎用に取れるのは seed と score のみ。手数/誤差など問題固有の指標はここに入れない。
+#   ・既定は seed と score のみ(汎用)。手数/誤差/違反数など問題固有の指標を CSV 列に足せば
+#     詳細分析できる(その列を results.csv に出し、measure.py の load_results でも読む。詳細は measure.py)。
 #   ・AHC_NFINAL=<最終ケース数> を設定すると avg を最終ケース数へ外挿した est を表示。
 set -euo pipefail
 cd "$(dirname "$0")/.."
