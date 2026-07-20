@@ -24,7 +24,7 @@ AHC の AI 利用規約は急速に変化する。**本コンテストの規約�
 
 ## コード / アプローチ
 - **提出は単一 `.rs`**(外部クレート不可)。再利用部品は `lib/` に**種類ごと1ファイル**で分割保持(各 `mod` ブロック,
-  `lib/` が正)。`lib/` は cargo の lib ターゲット `cplib`(`lib/lib.rs` が include!)なので **`cargo check`/`cargo test`
+  `lib/` が正)。`lib/` は cargo の lib ターゲット `ahc_lib`(`lib/lib.rs` が include!)なので **`cargo check`/`cargo test`
   で通常どおり型検査・テスト**できる。解答は lib を `use` せず**部品をコピペ**する(自己完結でそのまま提出でき,
   その場で改造もできる。cargo-equip 等の bundler は使わない)。
 - **1アプローチ = 1物理ファイル** `src/bin/NN_<name>.rs`。**過去の版を絶対に上書きしない**(動く版を失わない)。

@@ -6,7 +6,7 @@ edition = "2024"
 # 再利用部品(lib/*.rs)を束ねる検証専用の lib ターゲット。解答は use せずコピペするが、
 # これにより `cargo check` / `cargo test` で部品を通常どおり型検査・テストできる。
 [lib]
-name = "cplib"
+name = "ahc_lib"
 path = "lib/lib.rs"
 
 # AHC 提出は単一 .rs ファイル(外部クレート不可)。依存は足さない。

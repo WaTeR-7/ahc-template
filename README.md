@@ -53,7 +53,7 @@ python3 scripts/measure.py results.csv       # 赤字の構造を測る
 | `CLAUDE.md` | AIエージェント向け作業ルール。§0 で `problem/ai_guideline.txt` をインポートし未記入なら全停止 |
 | `problem/ai_guideline.txt` | その回の AI 利用規約を人が貼る(空placeholderを追跡・中身は毎回貼替) |
 | `src/bin/00_base.rs` | 基本部品(io/rng/timer)を貼った解答の最小スタート(追加部品は `lib/` からコピペ) |
-| `lib/` | 再利用部品を**種類ごと1ファイル**で分割保持(`mod` ブロック)。cargo の lib ターゲット `cplib`(`lib/lib.rs` が include!)で `cargo check`/`test` 可。解答へはコピペ |
+| `lib/` | 再利用部品を**種類ごと1ファイル**で分割保持(`mod` ブロック)。cargo の lib ターゲット `ahc_lib`(`lib/lib.rs` が include!)で `cargo check`/`test` 可。解答へはコピペ |
 | `scripts/fetch_tools.sh` | 保存HTML→tools.zip をDL/展開/build/入力生成(人手はページ保存のみ) |
 | `scripts/test.sh` | `<bin> [num]` で seed 掃引+採点(SCORER を編集) |
 | `scripts/measure.py` | 特徴量×成績 の相関/バケット(parse/feats を埋める) |
