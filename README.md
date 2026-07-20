@@ -24,7 +24,7 @@ cd ~/ahc/ahc069
 #  2) 問題ページ(要ログイン+参加登録)を「完全な形で保存」→ problem/ に置く
 scripts/fetch_tools.sh           # 保存HTML内のCDN URLから tools.zip をDL→build→in生成(全自動)
 # vis 出力に合わせ scripts/test.sh の SCORER を確認, LOG §1 を記入
-cp src/bin/00_base.rs src/bin/01_greedy.rs   # 1アプローチ=1ファイル
+cp src/bin/00_base.rs src/bin/01_greedy.rs   # 1アプローチ=1ファイル(必要な部品は lib/ からコピペ)
 cargo run --release --bin 01_greedy < tools/in/0000.txt > out.txt
 scripts/test.sh 01_greedy 100                # seed掃引+採点集計
 python3 scripts/measure.py results.csv       # 赤字の構造を測る
@@ -52,7 +52,9 @@ python3 scripts/measure.py results.csv       # 赤字の構造を測る
 |---|---|
 | `CLAUDE.md` | AIエージェント向け作業ルール。§0 で `problem/ai_guideline.txt` をインポートし未記入なら全停止 |
 | `problem/ai_guideline.txt` | その回の AI 利用規約を人が貼る(空placeholderを追跡・中身は毎回貼替) |
-| `src/bin/00_base.rs` | 高速I/O・タイマー(AHC_TL)・splitmix RNG 内蔵の骨格 |
+| `src/bin/00_base.rs` | 基本部品(io/rng/timer)を貼った解答の最小スタート(追加部品は `lib/` からコピペ) |
+| `lib/` | 再利用部品を**種類ごと1ファイル**で分割保持(`mod` ブロック)。提出は必要分をコピペで1ファイル化 |
+| `scripts/check_lib.sh` | `lib/` の部品を rustc で型検査(貼るだけだと cargo build に載らないため) |
 | `scripts/fetch_tools.sh` | 保存HTML→tools.zip をDL/展開/build/入力生成(人手はページ保存のみ) |
 | `scripts/test.sh` | `<bin> [num]` で seed 掃引+採点(SCORER を編集) |
 | `scripts/measure.py` | 特徴量×成績 の相関/バケット(parse/feats を埋める) |
