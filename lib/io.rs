@@ -62,11 +62,12 @@ mod io {
     /// 共通出力: バッチも対話も使える。既定は BufWriter(高速, drop 時にも flush)。
     /// 対話では応答を書くたびに flush() すること(溜めると相手に届かずデッドロック)。
     pub struct Writer {
-        w: std::io::BufWriter<std::io::Stdout>,
+        w: std::io::BufWriter<std::io::StdoutLock<'static>>,
     }
     impl Writer {
         pub fn new() -> Self {
-            Writer { w: std::io::BufWriter::new(std::io::stdout()) }
+            // stdout を一度だけ lock(書き込みごとの再ロック/二重バッファを避ける。StdoutLock は 'static)。
+            Writer { w: std::io::BufWriter::new(std::io::stdout().lock()) }
         }
         pub fn print(&mut self, s: impl Display) {
             write!(self.w, "{}", s).unwrap();

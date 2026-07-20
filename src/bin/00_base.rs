@@ -64,11 +64,12 @@ mod io {
 
     /// 共通出力: バッチも対話も使える。対話では書くたびに flush() すること。
     pub struct Writer {
-        w: std::io::BufWriter<std::io::Stdout>,
+        w: std::io::BufWriter<std::io::StdoutLock<'static>>,
     }
     impl Writer {
         pub fn new() -> Self {
-            Writer { w: std::io::BufWriter::new(std::io::stdout()) }
+            // stdout を一度だけ lock(書き込みごとの再ロック/二重バッファを避ける。StdoutLock は 'static)。
+            Writer { w: std::io::BufWriter::new(std::io::stdout().lock()) }
         }
         pub fn print(&mut self, s: impl Display) {
             write!(self.w, "{}", s).unwrap();
