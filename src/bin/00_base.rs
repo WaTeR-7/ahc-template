@@ -4,7 +4,7 @@
 //   ・cp src/bin/00_base.rs src/bin/NN_<approach>.rs して各手法を書く(過去版は絶対に上書きしない)。
 //   ・部品を足すときは lib/<name>.rs の `mod` ブロックを丸ごと貼る。**lib/ が各部品の正**。
 //     下の io/rng/timer は毎回要るので貼り込んだ最小スタート(コピー元は lib/)。
-//     ※ io には バッチ入力 Scanner / 対話入力 Interactor / 共通出力 Out がある。対話問題は Interactor を使う。
+//     ※ io には バッチ入力 Scanner / 対話入力 Interactor / 共通出力 Writer がある。対話問題は Interactor を使う。
 //   ・lib/ は cargo の lib ターゲット(ahc_lib)なので `cargo check` / `cargo test` で通常どおり検証できる
 //     (解答は use せずコピペ ── 自己完結でそのまま提出でき、その場で改造もできる)。
 
@@ -36,7 +36,7 @@ mod io {
         }
     }
 
-    /// 対話入力: 必要になった時だけ次の行を読む(EOF を待って固まらない)。出力は Out を使う。
+    /// 対話入力: 必要になった時だけ次の行を読む(EOF を待って固まらない)。出力は Writer を使う。
     pub struct Interactor {
         reader: std::io::BufReader<std::io::Stdin>,
         toks: VecDeque<String>,
@@ -63,12 +63,12 @@ mod io {
     }
 
     /// 共通出力: バッチも対話も使える。対話では書くたびに flush() すること。
-    pub struct Out {
+    pub struct Writer {
         w: std::io::BufWriter<std::io::Stdout>,
     }
-    impl Out {
+    impl Writer {
         pub fn new() -> Self {
-            Out { w: std::io::BufWriter::new(std::io::stdout()) }
+            Writer { w: std::io::BufWriter::new(std::io::stdout()) }
         }
         pub fn print(&mut self, s: impl Display) {
             write!(self.w, "{}", s).unwrap();
@@ -130,7 +130,7 @@ mod timer {
 fn main() {
     let timer = timer::Timer::new();
     let mut sc = io::Scanner::new(); // 対話問題なら io::Interactor::new()
-    let mut out = io::Out::new();
+    let mut out = io::Writer::new();
     let mut rng = rng::Rng::new(0x1234_5678_9ABC_DEF0);
 
     // ---- 入力 ----

@@ -1,9 +1,9 @@
 // 入出力(io)。入力2種と共通出力を1モジュールにまとめる:
 //   ・Scanner    : stdin を read_to_string で一括読み(**バッチ問題用**・高速)。対話では EOF 待ちで固まる。
 //   ・Interactor : 必要時に1行ずつ読む(**対話/リアクティブ問題用**・入力のみ)。
-//   ・Out        : **共通出力**(バッチも対話も使える)。対話では書くたびに flush() する。
-// 使い方(バッチ): let mut sc=io::Scanner::new(); let mut out=io::Out::new(); let n:usize=sc.next(); out.println(ans);
-// 使い方(対話)  : let mut it=io::Interactor::new(); let mut out=io::Out::new(); let x:i32=it.next(); out.println(q); out.flush();
+//   ・Writer        : **共通出力**(バッチも対話も使える)。対話では書くたびに flush() する。
+// 使い方(バッチ): let mut sc=io::Scanner::new(); let mut out=io::Writer::new(); let n:usize=sc.next(); out.println(ans);
+// 使い方(対話)  : let mut it=io::Interactor::new(); let mut out=io::Writer::new(); let x:i32=it.next(); out.println(q); out.flush();
 mod io {
     use std::collections::VecDeque;
     use std::fmt::Display;
@@ -32,7 +32,7 @@ mod io {
         }
     }
 
-    /// 対話入力: 必要になった時だけ次の行を読む(EOF を待って固まらない)。出力は Out を使う。
+    /// 対話入力: 必要になった時だけ次の行を読む(EOF を待って固まらない)。出力は Writer を使う。
     pub struct Interactor {
         reader: std::io::BufReader<std::io::Stdin>,
         toks: VecDeque<String>,
@@ -61,12 +61,12 @@ mod io {
 
     /// 共通出力: バッチも対話も使える。既定は BufWriter(高速, drop 時にも flush)。
     /// 対話では応答を書くたびに flush() すること(溜めると相手に届かずデッドロック)。
-    pub struct Out {
+    pub struct Writer {
         w: std::io::BufWriter<std::io::Stdout>,
     }
-    impl Out {
+    impl Writer {
         pub fn new() -> Self {
-            Out { w: std::io::BufWriter::new(std::io::stdout()) }
+            Writer { w: std::io::BufWriter::new(std::io::stdout()) }
         }
         pub fn print(&mut self, s: impl Display) {
             write!(self.w, "{}", s).unwrap();
