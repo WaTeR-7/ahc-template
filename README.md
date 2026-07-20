@@ -38,15 +38,6 @@ python3 scripts/measure.py results.csv       # 赤字の構造を測る
 > `img.atcoder.jp/<contest>/<token>.zip`(公開CDN・ログイン不要)が埋まっている。tools のDL/展開/build/
 > 入力生成は `fetch_tools.sh` が全部やる。
 
-## 方針(なぜこの構成か)
-
-- **提出は単一 .rs**(外部クレート不可) → 共通コードは「リンクするlib」でなく **00_base.rs に内蔵しコピペ**。
-- **1アプローチ=1ファイル**(NN_name.rs) → 動く版を絶対に失わない。
-- **LOG.md** が背骨。§0 序盤チェックリスト(測定優先・構造から考える)を毎回踏む。
-- **独立リポジトリ** → `git add .` が素直、code-review/ultrareview もリポジトリ単位で綺麗。
-- **contest repo は private**(理由はライセンス節) → problem/ を追跡でき、AI が clone だけで自己完結
-  (別マシン・クラウドエージェントでも問題文を再取得せず作業できる)。
-
 ## 中身
 
 | ファイル | 役割 |
