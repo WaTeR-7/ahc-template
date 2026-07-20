@@ -2,6 +2,7 @@
 /tools
 /out
 /rep
+/results.csv
 scripts/__pycache__
 
 # 生成物(可視化HTML/LOG PDF)は無視。ただし problem/ 配下(保存した問題文HTML等)は追跡する。

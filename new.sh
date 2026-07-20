@@ -11,9 +11,12 @@ dest="$HOME/ahc/$id"
 [ -e "$dest" ] && { echo "error: $dest already exists"; exit 1; }
 
 cp -r "$tdir" "$dest"
-rm -f "$dest/new.sh"                      # new.sh はテンプレ側だけに置く
-rm -rf "$dest/.git" "$dest/target" \
-       "$dest/scripts/__pycache__"        # ビルド/キャッシュ成果物は持ち込まない
+# テンプレ固有物は contest repo に持ち込まない
+#   new.sh: テンプレ側だけに置く / LICENSE(CC0): 問題文=著作物を含む repo に不適 / README: テンプレ自身の説明
+rm -f "$dest/new.sh" "$dest/LICENSE" "$dest/README.md" "$dest/results.csv"
+# git/ビルド/DL/キャッシュ成果物も持ち込まない
+rm -rf "$dest/.git" "$dest/target" "$dest/tools" "$dest/out" "$dest/rep" \
+       "$dest/scripts/__pycache__"
 # パッケージ名をコンテストIDに
 sed -i "s/^name = \"sol\"/name = \"$id\"/" "$dest/Cargo.toml" 2>/dev/null || true
 # LOG のタイトル雛形

@@ -18,6 +18,7 @@ SCORER="${SCORER:-./tools/target/release/vis}"
 cargo build --release --bin "$BIN" >/dev/null 2>&1
 SOL="./target/release/$BIN"
 mkdir -p out
+CSV="results.csv"; echo "seed,T,score" > "$CSV"   # measure.py が読む per-seed 記録
 
 total=0; sumT=0; fails=0; worst=999999999; worst_seed=-1; maxms=0
 for ((s=0; s<NUM; s++)); do
@@ -35,6 +36,7 @@ for ((s=0; s<NUM; s++)); do
   fi
   total=$((total+score)); sumT=$((sumT+T))
   if [ "$score" -lt "$worst" ]; then worst=$score; worst_seed=$s; fi
+  echo "$s,$T,$score" >> "$CSV"
 done
 
 echo "-------------------------------------"
@@ -46,3 +48,4 @@ echo "est(150)     : $(( total * 150 / (NUM>0?NUM:1) ))   # 150ケース合計�
 echo "avg T(lines) : $(( sumT / (NUM>0?NUM:1) ))"
 echo "worst        : seed $worst_seed score $worst"
 echo "max time(ms) : $maxms"
+echo "results.csv  : per-seed (seed,T,score) → python3 scripts/measure.py"

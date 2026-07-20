@@ -1,6 +1,6 @@
 # CLAUDE.md — AHC 作業ルール(AIエージェント向け)
 
-このリポジトリは AtCoder Heuristic Contest(AHC)1本。**`LOG.md` が背骨、`README.md` が運用フロー。**
+このリポジトリは AtCoder Heuristic Contest(AHC)1本。**`LOG.md` が背骨。**
 
 ## 0. AI 利用規約ゲート(最優先・他の何よりも先に)
 
@@ -37,7 +37,8 @@ AHC の AI 利用規約は急速に変化する。**本コンテストの規約�
 - **コミットのたびに `LOG.md §7 変更履歴` に1行追記。**
 
 ## セットアップ
-- 唯一の人手 = 問題ページ(要ログイン+参加登録)を「完全な形で保存」し `problem/` に置く。
+- 人手は2つ: ① 本コンテストの AI 利用規約を `problem/ai_guideline.txt` に貼る(§0) ② 問題ページ
+  (要ログイン+参加登録)を「完全な形で保存」し `problem/` に置く。
   以降のツール準備(DL/展開/build/入力生成)は `scripts/fetch_tools.sh` が自動で行う。
 
 ## 知見の追記(コツ・解法)
