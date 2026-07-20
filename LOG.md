@@ -26,7 +26,9 @@
 ## 2. リポジトリ / 実行
 
 - ソルバ: 外部クレート非依存の単一 `src/bin/NN_<name>.rs`(提出はこの1ファイルを貼る)。
-- 公式ツール: `tools/`(gitignore)。generator で `tools/in/0000..` を生成。採点は `scripts/test.sh` の `SCORER` を編集。
+- **セットアップ(人手は1回)**: 問題ページ(要ログイン+参加登録)を「完全な形で保存」→ `problem/` に置く
+  → `scripts/fetch_tools.sh` が保存HTML内のCDN URLから tools.zip をDL→展開→build→`in/`生成まで自動。
+- 公式ツール: `tools/`(gitignore)。より多くの入力は `tools/` で `cargo run -r --bin gen seeds.txt`。採点は `scripts/test.sh` の `SCORER` を編集。
 - 掃引: `scripts/test.sh <bin> [num]`。計測: `scripts/measure.py [results.csv]`。
 - ビジュアライザ: <URL>。提出URL: <URL>、言語 Rust。
 
