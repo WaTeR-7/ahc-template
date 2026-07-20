@@ -1,4 +1,5 @@
-// 高速入力 Scanner。プロセス即終了前提で 'static リーク(競プロ定石)で自己参照を回避。
+// 一括入力 Scanner(**バッチ問題用**)。stdin を read_to_string で全部読むので高速。
+// ※ 対話(リアクティブ)問題では EOF を待ってデッドロックする → lib/interactive.rs を使う。
 // 使い方: let mut sc = io::Scanner::new(); let n: usize = sc.next(); let a: Vec<i64> = sc.vec(n);
 mod io {
     use std::io::Read;
