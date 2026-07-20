@@ -2,6 +2,7 @@
 /tools
 /problem/*
 !/problem/.gitkeep
+!/problem/ai_guideline.txt
 /out
 /rep
 *.html

@@ -18,7 +18,10 @@ clone は初回1回だけ。**コンテストごとの開始は `new.sh`** で�
 ```sh
 ~/ahc/template/new.sh ahc069     # ~/ahc/ahc069 を作り git init
 cd ~/ahc/ahc069
-# ---- 唯一の人手: 問題ページ(要ログイン+参加登録)を「完全な形で保存」→ problem/ に置く ----
+# ---- 人手(AIに作業させる前に必ず) ----
+#  1) 本コンテストの AI 利用規約を problem/ai_guideline.txt に貼る
+#     └ 空だと CLAUDE.md の fail-closed で AI は「規約未読」だけ返して全停止する
+#  2) 問題ページ(要ログイン+参加登録)を「完全な形で保存」→ problem/ に置く
 scripts/fetch_tools.sh           # 保存HTML内のCDN URLから tools.zip をDL→build→in生成(全自動)
 # vis 出力に合わせ scripts/test.sh の SCORER を確認, LOG §1 を記入
 cp src/bin/00_base.rs src/bin/01_greedy.rs   # 1アプローチ=1ファイル
@@ -27,9 +30,13 @@ scripts/test.sh 01_greedy 100                # seed掃引+採点集計
 python3 scripts/measure.py results.csv       # 赤字の構造を測る
 ```
 
-> **なぜ半自動か**: 問題ページはログイン+参加登録が必須で機械取得できない。だが保存HTMLの中に
-> `img.atcoder.jp/<contest>/<token>.zip`(公開CDN・ログイン不要)が埋まっている。人手は
-> 「ページ保存1回」に集約し、tools のDL/展開/build/入力生成は `fetch_tools.sh` が全部やる。
+> **AI 利用規約ゲート**: AHC の AI 利用規約は急速に変化する(縮小方向)。恒久テンプレに特定の規約を焼き込まず、
+> `problem/ai_guideline.txt` に**その回の規約を人が貼る**設計。`CLAUDE.md` はそれをインポートし、**未記入なら
+> AI は一切の作業を拒否**する(fail-closed で規約違反を防ぐ)。
+>
+> **tools は半自動**: 問題ページはログイン+参加登録が必須で機械取得できないが、保存HTMLの中に
+> `img.atcoder.jp/<contest>/<token>.zip`(公開CDN・ログイン不要)が埋まっている。tools のDL/展開/build/
+> 入力生成は `fetch_tools.sh` が全部やる。
 
 ## 方針(なぜこの構成か)
 
@@ -42,7 +49,8 @@ python3 scripts/measure.py results.csv       # 赤字の構造を測る
 
 | ファイル | 役割 |
 |---|---|
-| `CLAUDE.md` | AIエージェント向け作業ルール(反復はユーザー主導・1approach=1file 等) |
+| `CLAUDE.md` | AIエージェント向け作業ルール。§0 で `problem/ai_guideline.txt` をインポートし未記入なら全停止 |
+| `problem/ai_guideline.txt` | その回の AI 利用規約を人が貼る(空placeholderを追跡・中身は毎回貼替) |
 | `src/bin/00_base.rs` | 高速I/O・タイマー(AHC_TL)・splitmix RNG 内蔵の骨格 |
 | `scripts/fetch_tools.sh` | 保存HTML→tools.zip をDL/展開/build/入力生成(人手はページ保存のみ) |
 | `scripts/test.sh` | `<bin> [num]` で seed 掃引+採点(SCORER を編集) |
