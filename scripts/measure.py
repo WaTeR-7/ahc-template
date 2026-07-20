@@ -2,7 +2,7 @@
 """赤字の構造を測るハーネス(骨格)。AHC で最も効くのは「どのケース群で・なぜ負けているか」を早く測ること。
 
 使い方の型:
-  1) test.sh 等で per-seed の (T, score) を results.csv に出す(seed,T,score)。
+  1) test.sh 等で per-seed の score を results.csv に出す(seed,score)。
   2) ここで tools/in/*.txt から各ケースの特徴量(feats)を計算。
   3) join して 特徴量×成績 の相関/バケット別平均を見る → 効果配分を決める。
 
@@ -38,24 +38,24 @@ def parse(path):
     return {"raw": toks}  # TODO
 
 def feats(parsed):
-    """このケースの特徴量(dict)。★何が難易度/赤字を左右しそうかを列挙。
-    例(ahc068): 壁密度 W, クリーン列/行数, 最大部屋サイズ, 被覆率 ...
+    """このケースの特徴量(dict)。★何が難易度/成績を左右しそうかを列挙。
+    例: 入力サイズ N, 要素密度, 分散, 制約の厳しさ ...(問題に合わせて)
     """
     return {
-        # "W": ...,
-        # "size": ...,
+        # "N": ...,
+        # "density": ...,
     }  # TODO
 
 # ---------- 実行 ----------
 def load_results(csv_path):
-    """seed,T,score 形式(ヘッダ有)を読む。無ければ {} 。"""
+    """seed,score 形式(ヘッダ有)を読む。無ければ {} 。"""
     res = {}
     if not os.path.exists(csv_path):
         return res
     for i, line in enumerate(open(csv_path)):
         if i == 0 or not line.strip(): continue
         p = line.strip().split(",")
-        res[int(p[0])] = {"T": int(p[1]), "score": int(p[2])}
+        res[int(p[0])] = {"score": int(p[1])}
     return res
 
 def main():
@@ -71,21 +71,20 @@ def main():
     if not rows:
         print("no tools/in/*.txt found"); return
     keys = [k for k in rows[0] if k not in ("seed",) and isinstance(rows[0].get(k), (int, float))]
-    print(f"cases={len(rows)}  features={[k for k in keys if k not in ('T','score')]}")
-    if any("T" in r for r in rows):
-        Ts = [r["T"] for r in rows if "T" in r]
-        print(f"\n== 特徴量 と T の相関(赤字の在処を掴む) ==")
+    print(f"cases={len(rows)}  features={[k for k in keys if k != 'score']}")
+    if any("score" in r for r in rows):
+        print(f"\n== 特徴量 と score の相関(どの入力特徴が成績を左右するか) ==")
         for k in keys:
-            if k in ("T", "score"): continue
-            xs = [r[k] for r in rows if "T" in r and k in r]
-            ys = [r["T"] for r in rows if "T" in r and k in r]
-            if xs: print(f"  corr(T, {k:12s}) = {corr(xs, ys):+.2f}")
-        print(f"\n最難(T上位)ケースの特徴を見て、効果配分を決める:")
-        for r in sorted([r for r in rows if 'T' in r], key=lambda r: -r["T"])[:10]:
-            fs = " ".join(f"{k}={r[k]}" for k in keys if k not in ("T", "score") and k in r)
-            print(f"  seed{r['seed']:4d} T={r['T']:6d} score={r.get('score','?'):>9} | {fs}")
+            if k == "score": continue
+            xs = [r[k] for r in rows if "score" in r and k in r]
+            ys = [r["score"] for r in rows if "score" in r and k in r]
+            if xs: print(f"  corr(score, {k:12s}) = {corr(xs, ys):+.2f}")
+        print(f"\nスコアが低い側のケース(最大化なら弱点。最小化問題なら逆に高い側を見る):")
+        for r in sorted([r for r in rows if 'score' in r], key=lambda r: r["score"])[:10]:
+            fs = " ".join(f"{k}={r[k]}" for k in keys if k != "score" and k in r)
+            print(f"  seed{r['seed']:4d} score={r['score']:>12} | {fs}")
     else:
-        print("(results.csv が無い/空: まず test.sh で per-seed の T,score を出す)")
+        print("(results.csv が無い/空: まず test.sh で per-seed の seed,score を出す)")
 
 if __name__ == "__main__":
     main()
