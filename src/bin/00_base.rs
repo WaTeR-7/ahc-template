@@ -4,7 +4,8 @@
 //   ・cp src/bin/00_base.rs src/bin/NN_<approach>.rs して各手法を書く(過去版は絶対に上書きしない)。
 //   ・部品を足すときは lib/<name>.rs の `mod` ブロックを丸ごと貼る。**lib/ が各部品の正**。
 //     下の io/rng/timer は毎回要るので貼り込んだ最小スタート(コピー元は lib/)。
-//   ・lib/ の部品は `scripts/check_lib.sh` で型検査できる(貼るだけだと cargo build に載らないため)。
+//   ・lib/ は cargo の lib ターゲット(cplib)なので `cargo check` / `cargo test` で通常どおり検証できる
+//     (解答は use せずコピペ ── 自己完結でそのまま提出でき、その場で改造もできる)。
 
 // ===== lib/io.rs =====
 mod io {

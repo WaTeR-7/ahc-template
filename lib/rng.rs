@@ -23,4 +23,23 @@ mod rng {
             (self.u64() >> 11) as f64 / (1u64 << 53) as f64
         }
     }
+
+    // 部品の単体テスト(`cargo test` で走る)。#[cfg(test)] なので提出ファイルに貼っても出力に出ない。
+    #[cfg(test)]
+    mod tests {
+        use super::Rng;
+        #[test]
+        fn deterministic_and_in_range() {
+            let (mut a, mut b) = (Rng::new(42), Rng::new(42));
+            for _ in 0..100 {
+                assert_eq!(a.u64(), b.u64()); // 同じ種は同じ列(決定的)
+            }
+            let mut r = Rng::new(1);
+            for _ in 0..1000 {
+                assert!(r.below(7) < 7);
+                let f = r.f64();
+                assert!((0.0..1.0).contains(&f));
+            }
+        }
+    }
 }
