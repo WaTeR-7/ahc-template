@@ -13,6 +13,8 @@ git clone https://github.com/WaTeR-7/ahc-template.git ~/ahc/template
 
 ## 使い方
 
+clone は初回1回だけ。**コンテストごとの開始は `new.sh`** で（テンプレを clone 済み前提）。
+
 ```sh
 ~/ahc/template/new.sh ahc069     # ~/ahc/ahc069 を作り git init
 cd ~/ahc/ahc069
