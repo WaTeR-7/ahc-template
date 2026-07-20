@@ -2,6 +2,9 @@
 
 ABC(cargo-compete)とはワークフローが別なので分離。**コンテストごとに独立 git リポジトリ**。
 
+> **公開方針**: このテンプレ(`ahc-template`)**のみ public**。**各 contest repo は private** にする。
+> contest repo は `problem/`(AtCoder の問題文=著作物)を追跡するため、public 化すると再配布になる。
+
 ## 初回セットアップ (clone)
 
 新しいマシンでは、このテンプレを `~/ahc/template` に clone しておく(以降 `new.sh` がここを雛形に使う)。
@@ -44,6 +47,8 @@ python3 scripts/measure.py results.csv       # 赤字の構造を測る
 - **1アプローチ=1ファイル**(NN_name.rs) → 動く版を絶対に失わない。
 - **LOG.md** が背骨。§0 序盤チェックリスト(測定優先・構造から考える)を毎回踏む。
 - **独立リポジトリ** → `git add .` が素直、code-review/ultrareview もリポジトリ単位で綺麗。
+- **contest repo は private / template のみ public** → problem/(問題文=著作物)を追跡でき、AI が clone
+  だけで自己完結(別マシン・クラウドエージェントでも問題文を再取得せず作業できる)。
 
 ## 中身
 
@@ -56,5 +61,5 @@ python3 scripts/measure.py results.csv       # 赤字の構造を測る
 | `scripts/test.sh` | `<bin> [num]` で seed 掃引+採点(SCORER を編集) |
 | `scripts/measure.py` | 特徴量×成績 の相関/バケット(parse/feats を埋める) |
 | `LOG.md` | 継続ログ雛形(§0チェックリスト付き) |
-| `.gitignore` | /target /tools /problem /out /rep *.html |
+| `.gitignore` | /target /tools /out /rep と生成 *.html/*.pdf を無視。**problem/ は追跡**(private前提) |
 | `new.sh` | テンプレ→新コンテスト scaffold(テンプレ側のみ) |

@@ -42,3 +42,5 @@ AHC の AI 利用規約は急速に変化する。**本コンテストの規約�
 
 ## git
 - **`git add` は関係ファイルのみ**(無関係な変更を巻き込まない)。破壊的/外向きの操作(push 等)は指示があるまでしない。
+- **この contest repo は private 前提**。`problem/` に AtCoder の問題文(著作物)を追跡するため public 化しない。
+  public への push/公開を求められたら、再配布になる旨を指摘して確認を取る(テンプレ `ahc-template` のみ public)。

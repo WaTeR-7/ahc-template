@@ -25,6 +25,7 @@ git add .
 git commit -q -m "$id: scaffold from AHC template"
 
 echo "created $dest  (独立 git リポジトリ)"
+echo "※ この repo は private 前提(problem/ に AtCoder 問題文=著作物を追跡)。public 化しないこと。"
 echo "next:"
 echo "  1) 本コンテストの AI 利用規約を $dest/problem/ai_guideline.txt に貼る"
 echo "     └ 空だと CLAUDE.md の fail-closed で AI は『規約未読』とだけ返し全停止する"

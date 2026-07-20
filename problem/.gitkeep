@@ -1,4 +1,4 @@
 # ここに問題ページを「完全な形で保存」して置く(要ログイン+参加登録)。
 #   例: A - <問題名>.html  と  A - <問題名>_files/
 # 保存後: `scripts/fetch_tools.sh` が この HTML から tools.zip URL を抽出してツール一式を準備する。
-# ※ HTML/画像は .gitignore で追跡されない(この .gitkeep だけ残す)。
+# ※ problem/ は追跡対象。よって contest repo は private 前提(AtCoder 問題文=著作物のため public 化しない)。
