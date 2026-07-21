@@ -8,3 +8,8 @@
 include!("io.rs");
 include!("rng.rs");
 include!("timer.rs");
+include!("env.rs");
+include!("grid.rs");
+include!("zobrist.rs");
+include!("matching.rs");
+include!("artic.rs");
