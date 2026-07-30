@@ -23,7 +23,7 @@ cd ~/ahc/ahc069
 #     └ 空だと CLAUDE.md の fail-closed で AI は「規約未読」だけ返して全停止する
 #  2) 問題ページ(要ログイン+参加登録)を「完全な形で保存」→ problem/ に置く
 scripts/fetch_tools.sh           # 保存HTML内のCDN URLから tools.zip をDL→build→in生成(全自動)
-# vis 出力に合わせ scripts/test.sh の SCORER を確認, LOG §1 を記入
+# vis 出力に合わせ scripts/test.sh の SCORER を確認, LOG §2 を記入
 cp src/bin/00_base.rs src/bin/01_greedy.rs   # 1アプローチ=1ファイル(必要な部品は lib/ からコピペ)
 cargo run --release --bin 01_greedy < tools/in/0000.txt > out.txt
 scripts/test.sh 01_greedy 100                # seed掃引+採点集計(results.meta の存在＝完了)
@@ -60,7 +60,7 @@ A_ENV="AHC_NEW=0" scripts/same.sh 02_newmech 01_greedy 20
 | `scripts/test.sh` | `<bin> [num] [KEY=val ...]` で seed 掃引+採点(SCORER を編集)。`results.meta` の存在＝完了 |
 | `scripts/same.sh` | `<binA> <binB> [num]` で**出力の byte 一致**を照合(決定性の自己チェック付き)。新機構は「OFF で前版と一致」を確認してから有効化する |
 | `scripts/measure.py` | 特徴量×成績 の相関/バケット(parse/feats を埋める) |
-| `LOG.md` | 継続ログ雛形(§0 序盤チェックリスト + **§2 設計上の選択 register** 付き) |
+| `LOG.md` | 継続ログ雛形(§0 用語集 + §1 序盤チェックリスト + **§3 設計上の選択 register** + §7a 否定結果の棚 + §8a 実ジャッジ校正) |
 | `.gitignore` | /target /tools /out /rep と生成 *.html/*.pdf を無視。**problem/ は追跡**(private前提) |
 | `new.sh` | テンプレ→新コンテスト scaffold(テンプレ側のみ) |
 | `LICENSE` | CC0-1.0(パブリックドメイン提供。帰属表示不要) |
