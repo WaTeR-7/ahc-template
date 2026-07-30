@@ -57,7 +57,7 @@ python3 scripts/measure.py results.csv       # 赤字の構造を測る
 | `scripts/fetch_tools.sh` | 保存HTML→tools.zip をDL/展開/build/入力生成(人手はページ保存のみ) |
 | `scripts/test.sh` | `<bin> [num]` で seed 掃引+採点(SCORER を編集) |
 | `scripts/measure.py` | 特徴量×成績 の相関/バケット(parse/feats を埋める) |
-| `LOG.md` | 継続ログ雛形(§0チェックリスト付き) |
+| `LOG.md` | 継続ログ雛形(§0 序盤チェックリスト + **§2 設計上の選択 register** 付き) |
 | `.gitignore` | /target /tools /out /rep と生成 *.html/*.pdf を無視。**problem/ は追跡**(private前提) |
 | `new.sh` | テンプレ→新コンテスト scaffold(テンプレ側のみ) |
 | `LICENSE` | CC0-1.0(パブリックドメイン提供。帰属表示不要) |
