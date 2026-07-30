@@ -26,8 +26,10 @@ scripts/fetch_tools.sh           # 保存HTML内のCDN URLから tools.zip をDL
 # vis 出力に合わせ scripts/test.sh の SCORER を確認, LOG §1 を記入
 cp src/bin/00_base.rs src/bin/01_greedy.rs   # 1アプローチ=1ファイル(必要な部品は lib/ からコピペ)
 cargo run --release --bin 01_greedy < tools/in/0000.txt > out.txt
-scripts/test.sh 01_greedy 100                # seed掃引+採点集計
+scripts/test.sh 01_greedy 100                # seed掃引+採点集計(results.meta の存在＝完了)
 python3 scripts/measure.py results.csv       # 赤字の構造を測る
+# 機構を足したら: 無効化した設定で前版と byte 一致することを先に確認する
+A_ENV="AHC_NEW=0" scripts/same.sh 02_newmech 01_greedy 20
 ```
 
 > **tools は半自動**: 問題ページはログイン+参加登録が必須で機械取得できないが、保存HTMLの中に
@@ -55,7 +57,8 @@ python3 scripts/measure.py results.csv       # 赤字の構造を測る
 | `src/bin/00_base.rs` | 基本部品(io/rng/timer)を貼った解答の最小スタート(追加部品は `lib/` からコピペ) |
 | `lib/` | 再利用部品を**種類ごと1ファイル**で分割保持(`mod` ブロック)。cargo の lib ターゲット `ahc_lib`(`lib/lib.rs` が include!)で `cargo check`/`test` 可。解答へはコピペ |
 | `scripts/fetch_tools.sh` | 保存HTML→tools.zip をDL/展開/build/入力生成(人手はページ保存のみ) |
-| `scripts/test.sh` | `<bin> [num]` で seed 掃引+採点(SCORER を編集) |
+| `scripts/test.sh` | `<bin> [num] [KEY=val ...]` で seed 掃引+採点(SCORER を編集)。`results.meta` の存在＝完了 |
+| `scripts/same.sh` | `<binA> <binB> [num]` で**出力の byte 一致**を照合(決定性の自己チェック付き)。新機構は「OFF で前版と一致」を確認してから有効化する |
 | `scripts/measure.py` | 特徴量×成績 の相関/バケット(parse/feats を埋める) |
 | `LOG.md` | 継続ログ雛形(§0 序盤チェックリスト + **§2 設計上の選択 register** 付き) |
 | `.gitignore` | /target /tools /out /rep と生成 *.html/*.pdf を無視。**problem/ は追跡**(private前提) |

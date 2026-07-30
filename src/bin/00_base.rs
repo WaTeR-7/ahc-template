@@ -227,12 +227,28 @@ fn main() {
     // ---- 初期解(貪欲/構築でまず制約を満たす1つ。ベースラインは best-of で退行させない) ----
 
     // ---- 改善(焼きなまし/ビーム/局所探索。while timer.ms() < timer.tl) ----
+    // 壁時計はこの**最外ループだけ**に使う。内部の重い段を壁時計で打ち切ると解が非決定的になり、
+    // 掃引の比較も byte 一致検証も成立しない ⇒ 内部段は timer::Budget(作業量カウンタ)で打ち切る。
     // let mut iters = 0u64;
     // while timer.ms() < timer.tl {
     //     iters += 1;
     //     // 近傍生成 rng.below(..), 受理判定 rng.f64() < exp(delta/temp) 等
     // }
     // eprintln!("iters={} ms={}", iters, timer.ms());
+
+    // ---- 検証(AHC_VERIFY=1 で有効。**出力そのものを1手ずつ検査する**) ----
+    // 内部状態が解けていても出力が違法なことがある。内部の適用関数が制約(壁/範囲/順序)を無視して
+    // いると、盤面は完成しているのに提出は失格になる ⇒ **終状態の検査だけでは足りない。**
+    // 提出物(= これから書き出す列)を、制約に忠実な別実装で頭から再生して1手ずつ assert する。
+    // if std::env::var("AHC_VERIFY").ok().as_deref() == Some("1") {
+    //     let mut sim = /* 初期状態を作り直す */;
+    //     for (i, op) in ans.iter().enumerate() {
+    //         assert!(sim.legal(op), "illegal op #{i}: {op:?}");   // ← ここが本体
+    //         sim.apply(op);
+    //     }
+    //     assert!(sim.is_goal(), "end state is not the goal");
+    //     assert!(ans.len() <= LIMIT, "too many ops: {}", ans.len());
+    // }
 
     // ---- 出力(整数/文字列は fmt を経由しない put。対話では書くたび out.flush()) ----
     // out.putln(ans);                    // 1値+改行

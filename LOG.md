@@ -77,6 +77,7 @@
 - 公式ツール: `tools/`(gitignore)。より多くの入力は `tools/` で `cargo run -r --bin gen seeds.txt`。採点は `scripts/test.sh` の `SCORER` を編集。
 - 掃引: `scripts/test.sh <bin> [num] [KEY=val ...]`（`results.csv` = seed,score,ms /
   `results.meta` = サマリで**存在＝完了の目印**。無効解閾値は `INVALID_BELOW`）。計測: `scripts/measure.py [results.csv]`。
+- byte 一致照合: `A_ENV="AHC_NEW=0" scripts/same.sh <新bin> <前bin> [num]`（決定性の自己チェック付き）。
 - ビジュアライザ: <URL>。提出URL: <URL>、言語 Rust。
 
 ## 4. 作業ルール
@@ -89,6 +90,10 @@
 - **env チューナブル**(AHC_TL 等)で再コンパイル無しに掃引。
 - **ローカルは遅い前提**。時間予算は上限近く(自己制限は速いジャッジに自動追従)。
 - **否定結果は前提つきで §6a に積み、バグ修正/機構追加/選択変更のあとに再走させる**(否定は永久ではない)。
+- **検証の作法**: ①新機構は「無効化した設定で前版と byte 一致」を確認してから有効化
+  (`A_ENV="AHC_NEW=0" scripts/same.sh <新> <前版> 20`) ②**出力を1手ずつ検査**(`AHC_VERIFY=1`。
+  終状態の検査では足りない ── 内部が解けていても提出が違法なことがある) ③**壁時計は最外の締切だけ**、
+  内部段は `timer::Budget`(作業量カウンタ)で打ち切る(壁時計だと解が非決定的になり比較が壊れる)。
 
 ## 5. 試したアプローチ
 
