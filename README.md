@@ -60,7 +60,7 @@ A_ENV="AHC_NEW=0" scripts/same.sh 02_newmech 01_greedy 20
 | `scripts/test.sh` | `<bin> [num] [KEY=val ...]` で seed 掃引+採点(SCORER を編集)。`results.meta` の存在＝完了 |
 | `scripts/same.sh` | `<binA> <binB> [num]` で**出力の byte 一致**を照合(決定性の自己チェック付き)。新機構は「OFF で前版と一致」を確認してから有効化する |
 | `scripts/measure.py` | 特徴量×成績 の相関/バケット(parse/feats を埋める) |
-| `LOG.md` | 継続ログ雛形(§0 用語集 + §1 序盤チェックリスト + **§3 設計上の選択 register** + §7a 否定結果の棚 + §8a 実ジャッジ校正) |
+| `LOG.md` | **このコンテストの記録**の雛形(用語集 / チェックリスト / 問題 / **設計上の選択 register** / 試したアプローチ / 発見+否定結果の棚 / 現行ベスト+実ジャッジ校正 / 変更履歴)。冒頭に「どの節に何を書くか」の対応表あり。**方法論は `CLAUDE.md` 側**(二重に書かない) |
 | `.gitignore` | /target /tools /out /rep と生成 *.html/*.pdf を無視。**problem/ は追跡**(private前提) |
 | `new.sh` | テンプレ→新コンテスト scaffold(テンプレ側のみ) |
 | `LICENSE` | CC0-1.0(パブリックドメイン提供。帰属表示不要) |
