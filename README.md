@@ -57,7 +57,7 @@ A_ENV="AHC_NEW=0" scripts/same.sh 02_newmech 01_greedy 20
 | `problem/ai_guideline.txt` | その回の AI 利用規約を人が貼る(空placeholderを追跡・中身は毎回貼替) |
 | `src/bin/00_base.rs` | 基本部品(io/rng/timer)を貼った解答の最小スタート(追加部品は `lib/` からコピペ) |
 | `lib/` | 再利用部品を**種類ごと1ファイル**で分割保持(`mod` ブロック)。cargo の lib ターゲット `ahc_lib`(`lib/lib.rs` が include!)で `cargo check`/`test` 可。解答へはコピペ |
-| `knowledge/` | **過去コンテストの分析**(1回1ファイル+索引)。テンプレに同梱されるので**新しいコンテストの開始時に手元にある**。**正本はテンプレ側** ── 回が終わったら分析を書いてここへ戻す |
+| `knowledge/` | **過去コンテストの蓄積**: `contests/`(参加記録) / `methods/`(**大枠の手法＝手持ちの一覧**) / `techniques/`(部品) + 構造カルテ8軸と索引。テンプレに同梱されるので**新しいコンテストの開始時に手元にある**。**正本はテンプレ側** ── 回が終わったら書いてここへ戻す |
 | `scripts/fetch_tools.sh` | 保存HTML→tools.zip をDL/展開/build/入力生成(人手はページ保存のみ) |
 | `scripts/test.sh` | `<bin> [num] [KEY=val ...]` で seed 掃引+採点(SCORER を編集)。`results.meta` の存在＝完了 |
 | `scripts/same.sh` | `<binA> <binB> [num]` で**出力の byte 一致**を照合(決定性の自己チェック付き)。新機構は「OFF で前版と一致」を確認してから有効化する |
