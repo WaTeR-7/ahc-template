@@ -35,7 +35,7 @@
 - [ ] **1手の最大威力を制約の条文から読み直す**（実行可能解を書く*前*に。パラメータの端が合法かを1つずつ）→ §3 C1
 - [ ] **まず実行可能解**（貪欲/構築で1つ。以後 best-of で絶対に退行させない）
 - [ ] **§3 register を埋める**（自分が何を*選んだ*のかを書き出す）
-- [ ] **赤字の構造を測る**（`scripts/measure.py`。どのケース群で・なぜ負けているか）→ §6
+- [ ] **赤字の構造を測る**（`scripts/measure.py`。どのケース群で・なぜ負けているか ⇒ **効果配分をここで決める**）→ §6
 - [ ] **上位との差を逆算**（順位表/スコアから想定指標を逆算し、狙う水準を知る）→ §2
 - [ ] **解法クラスの天井をスコアの単位で計算**（代理量で出すと嘘の下限になる）→ §6
 - [ ] **評価関数は測って選ぶ**（特徴量と残りコストの相関）
@@ -71,10 +71,8 @@
 ## 4. リポジトリ / 実行
 
 - ソルバ: 外部クレート非依存の単一 `src/bin/NN_<name>.rs`(提出はこの1ファイルを貼る)。
-- **セットアップ(人手)**: ① 本コンテストの AI 利用規約を `problem/ai_guideline.txt` に貼る(空だと AI は全停止)
-  ② 問題ページ(要ログイン+参加登録)を「完全な形で保存」→ `problem/` に置く
-  → 以降 `scripts/fetch_tools.sh` が保存HTML内のCDN URLから tools.zip をDL→展開→build→`in/`生成まで自動。
-- 公式ツール: `tools/`(gitignore)。より多くの入力は `tools/` で `cargo run -r --bin gen seeds.txt`。採点は `scripts/test.sh` の `SCORER` を編集。
+- 公式ツール: `tools/`(gitignore。無ければ `scripts/fetch_tools.sh`)。より多くの入力は `tools/` で
+  `cargo run -r --bin gen seeds.txt`。採点器は `scripts/test.sh` の `SCORER` を編集。
 - 掃引: `scripts/test.sh <bin> [num] [KEY=val ...]`（`results.csv` = seed,score,ms /
   `results.meta` = サマリで**存在＝完了の目印**。無効解閾値は `INVALID_BELOW`）。計測: `scripts/measure.py [results.csv]`。
 - byte 一致照合: `A_ENV="AHC_NEW=0" scripts/same.sh <新bin> <前bin> [num]`（決定性の自己チェック付き）。

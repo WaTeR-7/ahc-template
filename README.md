@@ -40,8 +40,9 @@ A_ENV="AHC_NEW=0" scripts/same.sh 02_newmech 01_greedy 20
 
 このテンプレは **Claude Code(AI エージェント)で回す**前提で組んである。
 
-- **方針**: AI の作業ルールは **`CLAUDE.md`** に集約(1アプローチ=1ファイル/単一 .rs 提出/測定優先/
-  `LOG.md` が背骨…)。AI はセッション開始時にこれを読んで従う。人間は README、AI は CLAUDE.md が入口。
+- **方針**: **方法論・作業ルール・過去の失敗例は `CLAUDE.md`、そのコンテストの記録は `LOG.md`** と
+  棲み分ける(両方に書くと必ず片方が古くなる)。AI はセッション開始時に CLAUDE.md を読んで従う。
+  人間は README、AI は CLAUDE.md が入口。
 - **規約ガイド**: AHC の AI 利用規約は急速に変化する(縮小方向)ので、恒久テンプレに焼き込まない。
   その回の規約を **`problem/ai_guideline.txt` に人が貼る** → `CLAUDE.md §0` がインポートする。
   **未記入なら AI は「規約未読」とだけ返して全停止**(fail-closed で規約違反を防ぐ)。
@@ -52,7 +53,7 @@ A_ENV="AHC_NEW=0" scripts/same.sh 02_newmech 01_greedy 20
 
 | ファイル | 役割 |
 |---|---|
-| `CLAUDE.md` | AIエージェント向け作業ルール。§0 で `problem/ai_guideline.txt` をインポートし未記入なら全停止 |
+| `CLAUDE.md` | AIエージェント向け**方法論・作業ルール**(前提/コード/進め方/検証と計測/記録の規律/git)。§0 で `problem/ai_guideline.txt` をインポートし未記入なら全停止 |
 | `problem/ai_guideline.txt` | その回の AI 利用規約を人が貼る(空placeholderを追跡・中身は毎回貼替) |
 | `src/bin/00_base.rs` | 基本部品(io/rng/timer)を貼った解答の最小スタート(追加部品は `lib/` からコピペ) |
 | `lib/` | 再利用部品を**種類ごと1ファイル**で分割保持(`mod` ブロック)。cargo の lib ターゲット `ahc_lib`(`lib/lib.rs` が include!)で `cargo check`/`test` 可。解答へはコピペ |
