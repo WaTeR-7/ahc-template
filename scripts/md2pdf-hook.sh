@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # Claude Code / Codex の PostToolUse フック本体。
 #   stdin に来る JSON から編集されたファイルのパスを取り出し、
-#   それが `docs/*.md` なら `md2pdf` で同名の PDF を再生成する。
+#   それが **repo 直下の `*.md` か `docs/*.md`** なら `md2pdf` で同名の PDF を再生成する。
 #   Claude の Write/Edit と Codex の apply_patch（複数ファイル可）の
 #   両方の入力形式を受け付ける。
 #
@@ -66,8 +66,11 @@ command -v md2pdf >/dev/null 2>&1 || exit 0
 repo_root="$(git rev-parse --show-toplevel 2>/dev/null)" || exit 0
 
 for f in "${files[@]}"; do
+  # 記録は最初 repo 直下の `LOG.md`、育つと `docs/` へ 3 分割される(CLAUDE.md の棲み分け)。
+  # **どちらでも拾う**ようにしておく ── 片方だけにするとフックが静かに何もしなくなる。
   case "$f" in
     "$repo_root"/docs/*.md) ;;
+    "$repo_root"/*.md) ;;
     *) continue ;;
   esac
   [ -f "$f" ] || continue

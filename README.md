@@ -35,6 +35,10 @@ python3 scripts/rel.py mass/01_greedy.csv mass/02_newmech.csv   # Δrel と Δlo
 A_ENV="AHC_NEW=0" scripts/same.sh 02_newmech 01_greedy 20
 ```
 
+> **フックは初回に trust が要る**: Claude Code は `.claude/settings.json` を、Codex は `.codex/hooks.json` を
+> 読み込むが、**内容を確認して trust するまで動かない**(Codex は `/hooks`)。定義を変えたときも同じ。
+> PDF 生成は `md2pdf` が PATH に無ければ**黙って何もしない**(フック自体は常に成功する)。
+
 > **tools は半自動**: 問題ページはログイン+参加登録が必須で機械取得できないが、保存HTMLの中に
 > `img.atcoder.jp/<contest>/<token>.zip`(公開CDN・ログイン不要)が埋まっている。tools のDL/展開/build/
 > 入力生成は `fetch_tools.sh` が全部やる。
@@ -74,6 +78,9 @@ A_ENV="AHC_NEW=0" scripts/same.sh 02_newmech 01_greedy 20
 | `scripts/md2pdf-hook.sh` | `docs/*.md` を編集したら PDF を再生成する PostToolUse フック本体(Claude/Codex 両対応) |
 | `LOG.md` | **このコンテストの記録**の雛形(用語集 / チェックリスト / 問題 / **設計上の選択 register** / 試したアプローチ / 発見+否定結果の棚 / 現行ベスト+実ジャッジ校正 / 変更履歴)。冒頭に「どの節に何を書くか」の対応表あり。**方法論は `CLAUDE.md` 側**(二重に書かない) |
 | `.gitignore` | /target /tools /out /rep /vis /truth と生成 *.html/*.pdf を無視。**`mass/` は生データを無視しつつ分母(`best.csv`/`ub.csv`)だけ追跡**。**problem/ は追跡**(private前提) |
+| `.claude/settings.json` | Claude Code の**プロジェクト設定**。`Write\|Edit` の PostToolUse フックで `scripts/md2pdf-hook.sh` を呼ぶ(記録の PDF を自動再生成。非同期) |
+| `.codex/hooks.json` | Codex 側の同じフック(`apply_patch` にマッチ)＋ **Stop フックで完了音**。音は `~/.claude/sounds/done.wav` → 無ければ Windows のビープ → 無ければ無音(`\|\| true` で必ず成功する) |
+| `.codex/config.toml` | Codex の既定(`approval_policy` / `sandbox_mode=workspace-write` / **`network_access=true`**)。tools と真値の取得に外部通信が要るため |
 | `new.sh` | テンプレ→新コンテスト scaffold(テンプレ側のみ) |
 | `LICENSE` | CC0-1.0(パブリックドメイン提供。帰属表示不要) |
 

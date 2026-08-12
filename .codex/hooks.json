@@ -1,0 +1,29 @@
+{
+  "description": "Project-local Codex hooks for documentation PDFs and completion feedback.",
+  "hooks": {
+    "PostToolUse": [
+      {
+        "matcher": "^apply_patch$",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash \"$(git rev-parse --show-toplevel)/scripts/md2pdf-hook.sh\"",
+            "timeout": 120,
+            "statusMessage": "md2pdf: 記録の PDF を再生成中"
+          }
+        ]
+      }
+    ],
+    "Stop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "paplay \"$HOME/.claude/sounds/done.wav\" 2>/dev/null || powershell.exe -NoProfile -c \"[console]::beep(880,200)\" 2>/dev/null || true; printf '{}'",
+            "timeout": 10
+          }
+        ]
+      }
+    ]
+  }
+}

@@ -1,0 +1,18 @@
+{
+  "hooks": {
+    "PostToolUse": [
+      {
+        "matcher": "Write|Edit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash \"${CLAUDE_PROJECT_DIR:-.}/scripts/md2pdf-hook.sh\"",
+            "async": true,
+            "timeout": 120,
+            "statusMessage": "md2pdf: 記録の PDF を再生成中"
+          }
+        ]
+      }
+    ]
+  }
+}
