@@ -17,7 +17,7 @@
 | script | 使い方 | 何をする |
 |---|---|---|
 | `test.sh` | `scripts/test.sh <bin> [num\|from:to] [KEY=val ...]` | **直列**で seed 掃引 + 採点。**per-seed の ms が信用できるのはこちらだけ** ⇒ 時間予算の判断に使う。`results.meta` の存在＝完了。★ 採点コマンド（`SCORER`）は回ごとに要編集。**対話形式の回は tester 経由に差し替える**（先頭のコメント参照） |
-| `mass.sh` | `scripts/mass.sh <bin> [num\|from:to] [KEY=val ...]` | **並列**で大量 seed を回し **score だけ**集める（採否の判定用。**ms は測らない**）。`INDIR=` で入力ディレクトリ、`OUT=` で出力先、`JOBS=` で並列数。<br>⚠ **並列度そのものが採否を変える**（per-case の実時間が膨らんで壁時計の弁を人工的に発火させる）⇒ **時間を食うレバーは `JOBS=3` で測り直す** |
+| `mass.sh` | `scripts/mass.sh <bin> [num\|from:to] [KEY=val ...]` | **並列**で大量 seed を回し **score だけ**集める（採否の判定用。**ms は測らない**）。🔴 **採点器は対話問題なら `TESTER=<tester>`、非対話問題なら `SCORER=<vis>`**（`test.sh` と同じもの）。`INDIR=` で入力ディレクトリ、`OUT=` で出力先、`JOBS=` で並列数。<br>⚠ **並列度そのものが採否を変える**（per-case の実時間が膨らんで壁時計の弁を人工的に発火させる）⇒ **時間を食うレバーは `JOBS=3` で測り直す** |
 | `diag.sh` | `scripts/diag.sh <NNd_bin> [num\|from:to] [KEY=val ...]` | 計測版の **stderr（診断行）を大量 seed 分あつめる**（`mass.sh` は score 以外を捨てるので別物）。**壁時計ゲートを外して**走らせる（外さないと「計測のぶん打ち切りが早まった別の解」を測ることになる） |
 
 ## 3. 判定する

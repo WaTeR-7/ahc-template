@@ -22,6 +22,12 @@
 #     ⇒ **時間中立なレバーは既定の並列で、時間を食うレバーは JOBS=3 程度で測り直す。**
 #     内部の打ち切りは作業量カウンタにして、壁時計は最外の安全弁だけに使う(CLAUDE.md)。
 #   ・JOBS=<n> で並列数を変更(既定 nproc-1)。
+#
+# 採点器の 2 形式(**どちらのコンテストでも動く**):
+#   ・**対話問題**: TESTER=<tester>  … `tester <solver> < in` を実行し、stderr の "Score = N" を読む(既定)。
+#   ・**非対話問題**: SCORER=<vis>   … `solver < in > out` の後に `vis <in> <out>` を実行し、
+#     その stdout/stderr の "Score = N"(または "Score: N")を読む。**test.sh の SCORER と同じもの**を渡せる。
+#   ⚠ どちらか一方を用意すること。両方あるときは SCORER を優先する。
 set -euo pipefail
 cd "$(dirname "$0")/.."
 
@@ -34,10 +40,20 @@ elif [ $# -gt 0 ] && [[ "$1" =~ ^[0-9]+:[0-9]+$ ]]; then FROM="${1%%:*}"; TO="${
 ENVS=("$@")
 
 TESTER="${TESTER:-./tools/target/release/tester}"
+SCORER="${SCORER:-}"          # 非対話問題はこちら(test.sh と同じ vis 系の採点器)
 # 入力ディレクトリ。**本番と同一の 2000 ケース**は `tools/in_sys`(公式 input.csv の seed で生成)。
 INDIR="${INDIR:-tools/in}"
 JOBS="${JOBS:-$(( $(nproc) > 2 ? $(nproc) - 1 : 1 ))}"
-[ -x "$TESTER" ] || { echo "no tester: $TESTER"; exit 1; }
+if [ -n "$SCORER" ]; then
+  [ -x "$SCORER" ] || { echo "no scorer: $SCORER"; exit 1; }
+  MODE=scorer
+else
+  [ -x "$TESTER" ] || {
+    echo "no tester: $TESTER"
+    echo "  対話問題なら TESTER=<tester> を、非対話問題なら SCORER=<vis> を指定する(scripts/fetch_tools.sh)。"
+    exit 1; }
+  MODE=tester
+fi
 
 cargo build --release --bin "$BIN" >/dev/null
 TMP=$(mktemp -d); trap 'rm -rf "$TMP"' EXIT
@@ -58,9 +74,17 @@ s="$1"
 in=$(printf "$INDIR/%04d.txt" "$s")
 [ -f "$in" ] || { echo "$s,MISSING"; exit 0; }
 err="$TMPD/err.$s"
-if [ -n "$ENVSTR" ]; then env $ENVSTR "$TESTER" "$TMPD/bin" < "$in" > /dev/null 2> "$err" || true
-else "$TESTER" "$TMPD/bin" < "$in" > /dev/null 2> "$err" || true; fi
-sc=$(sed -n 's/^Score = \([0-9][0-9]*\).*/\1/p' "$err" | tail -1)
+if [ "$MODE" = scorer ]; then
+  out="$TMPD/out.$s"
+  if [ -n "$ENVSTR" ]; then env $ENVSTR "$TMPD/bin" < "$in" > "$out" 2>/dev/null || true
+  else "$TMPD/bin" < "$in" > "$out" 2>/dev/null || true; fi
+  "$SCORER" "$in" "$out" > "$err" 2>&1 || true
+  rm -f "$out"
+else
+  if [ -n "$ENVSTR" ]; then env $ENVSTR "$TESTER" "$TMPD/bin" < "$in" > /dev/null 2> "$err" || true
+  else "$TESTER" "$TMPD/bin" < "$in" > /dev/null 2> "$err" || true; fi
+fi
+sc=$(sed -n 's/^Score *[=:] *\([0-9][0-9]*\).*/\1/p' "$err" | tail -1)
 echo "$s,${sc:-0}"
 rm -f "$err"
 WORKER
@@ -68,7 +92,7 @@ chmod +x "$TMP/worker.sh"
 
 echo "== mass: bin=$BIN env=${ENVS[*]:-none} seeds=$FROM..$((TO-1)) (n=$((TO-FROM))) jobs=$JOBS =="
 t0=$(date +%s)
-seq "$FROM" $((TO-1)) | TMPD="$TMP" TESTER="$TESTER" INDIR="$INDIR" ENVSTR="${ENVS[*]:-}" \
+seq "$FROM" $((TO-1)) | TMPD="$TMP" TESTER="$TESTER" SCORER="$SCORER" MODE="$MODE" INDIR="$INDIR" ENVSTR="${ENVS[*]:-}" \
   xargs -P "$JOBS" -n 1 "$TMP/worker.sh" > "$TMP/raw.csv"
 t1=$(date +%s)
 

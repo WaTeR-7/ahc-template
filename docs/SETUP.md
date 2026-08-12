@@ -49,6 +49,7 @@
 - 掃引: `../scripts/test.sh <bin> [num] [KEY=val ...]`（`results.csv` = seed,score,ms /
   `results.meta` = サマリで**存在＝完了の目印**。無効解閾値は `INVALID_BELOW`）。計測: `../scripts/measure.py`。
 - 大量 seed（採否の判定）: `../scripts/mass.sh <bin> [num|from:to] [KEY=val]` → `../scripts/rel.py`。
+  ⚠ **採点器の指定**: 対話問題は `TESTER=<tester>`、非対話問題は `SCORER=<vis>`（`test.sh` と同じもの）。
 - byte 一致照合: `A_ENV="AHC_NEW=0" ../scripts/same.sh <新bin> <前bin> [num]`（決定性の自己チェック付き）。
 - **env の既定値**: <チューナブルと既定値の表。**OFF 値の列 ＝ byte 一致する版の索引**>
 - ビジュアライザ: <URL>。提出URL: <URL>、言語 Rust。
