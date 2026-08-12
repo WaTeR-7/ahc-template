@@ -28,6 +28,9 @@ cp src/bin/00_base.rs src/bin/01_greedy.rs   # 1アプローチ=1ファイル(�
 cargo run --release --bin 01_greedy < tools/in/0000.txt > out.txt
 scripts/test.sh 01_greedy 100                # seed掃引+採点集計(results.meta の存在＝完了)
 python3 scripts/measure.py results.csv       # 赤字の構造を測る
+# 相対評価の回はここから: 大量 seed を並列で回して paired で判定する
+scripts/mass.sh 01_greedy 2000               # mass/01_greedy.csv (score だけ)
+python3 scripts/rel.py mass/01_greedy.csv mass/02_newmech.csv   # Δrel と Δlog(両方 +2se で採用)
 # 機構を足したら: 無効化した設定で前版と byte 一致することを先に確認する
 A_ENV="AHC_NEW=0" scripts/same.sh 02_newmech 01_greedy 20
 ```
@@ -62,8 +65,15 @@ A_ENV="AHC_NEW=0" scripts/same.sh 02_newmech 01_greedy 20
 | `scripts/test.sh` | `<bin> [num] [KEY=val ...]` で seed 掃引+採点(SCORER を編集)。`results.meta` の存在＝完了 |
 | `scripts/same.sh` | `<binA> <binB> [num]` で**出力の byte 一致**を照合(決定性の自己チェック付き)。新機構は「OFF で前版と一致」を確認してから有効化する |
 | `scripts/measure.py` | 特徴量×成績 の相関/バケット(parse/feats を埋める) |
+| `scripts/mass.sh` | `<bin> [num\|from:to] [KEY=val]` で**大量 seed を並列**に走らせ score だけ集める(採否の判定用。ms は測らない)。`INDIR=` で入力ディレクトリを差し替え。⚠ **並列度そのものが採否を変える**ので、時間を食うレバーは `JOBS=3` で測り直す |
+| `scripts/rel.py` | **相対評価の判定**。`Δrel`(算術)と `Δlog`(対数平均)を paired で出し、`±se`・必要 n・群別分解まで。**両方が +2se で初めて採用** |
+| `scripts/fetch_truth.sh` | 🔴 **終了後**に `ahc_standings` の真値(全参加者×全 seed のスコア行列)を取り、**本番と同一の入力を再生成**する(`--dir in_sys` 固定 ── 既定だと `tools/in` を上書きする事故がある) |
+| `scripts/rank.py` | 🔴 **終了後に「この版は何位相当か」を直接出す**(推定を挟まない)。`base` を渡すと**版間の比を自分の真値スコアに写した投影順位**も出る |
+| `scripts/vis.sh` | 公式 web ビジュアライザをローカルで動かす(seed 切替・ターンスライダー・自前の重ね描き)。`CONTEST=` で回を指定 |
+| `scripts/diag.sh` | 計測版(`NNd_*.rs`)の **stderr(診断行)を大量 seed 分あつめる**(mass.sh は score 以外を捨てるので別物)。壁時計ゲートを外して走らせる |
+| `scripts/md2pdf-hook.sh` | `docs/*.md` を編集したら PDF を再生成する PostToolUse フック本体(Claude/Codex 両対応) |
 | `LOG.md` | **このコンテストの記録**の雛形(用語集 / チェックリスト / 問題 / **設計上の選択 register** / 試したアプローチ / 発見+否定結果の棚 / 現行ベスト+実ジャッジ校正 / 変更履歴)。冒頭に「どの節に何を書くか」の対応表あり。**方法論は `CLAUDE.md` 側**(二重に書かない) |
-| `.gitignore` | /target /tools /out /rep と生成 *.html/*.pdf を無視。**problem/ は追跡**(private前提) |
+| `.gitignore` | /target /tools /out /rep /vis /truth と生成 *.html/*.pdf を無視。**`mass/` は生データを無視しつつ分母(`best.csv`/`ub.csv`)だけ追跡**。**problem/ は追跡**(private前提) |
 | `new.sh` | テンプレ→新コンテスト scaffold(テンプレ側のみ) |
 | `LICENSE` | CC0-1.0(パブリックドメイン提供。帰属表示不要) |
 

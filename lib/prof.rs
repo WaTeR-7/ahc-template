@@ -94,7 +94,7 @@ mod prof {
         eprintln!("--- prof (total {} ms) ---", total_ms);
         eprintln!("{:<12} {:>14} {:>10} {:>7} {:>12}", "slot", "count", "ms", "%", "ns/call");
         let mut sum_ns = 0u128;
-        for i in 0..N {
+        for (i, name) in NAMES.iter().enumerate() {
             let (c, ns) = (count(i), nanos(i));
             if c == 0 && ns == 0 {
                 continue;
@@ -103,7 +103,7 @@ mod prof {
             let ms = ns as f64 / 1e6; // 1ms 未満の段を 0 に丸めない(細分の途中で消えると追えない)
             let pct = if total_ms > 0 { ms * 100.0 / total_ms as f64 } else { 0.0 };
             let per = if c > 0 { ns / c as u128 } else { 0 };
-            eprintln!("{:<12} {:>14} {:>10.2} {:>6.1}% {:>12}", NAMES[i], c, ms, pct, per);
+            eprintln!("{:<12} {:>14} {:>10.2} {:>6.1}% {:>12}", name, c, ms, pct, per);
         }
         eprintln!(
             "計測できた段の合計: {:.2} ms / 全体 {} ms（入れ子の span は二重計上）",
@@ -129,6 +129,8 @@ mod prof {
             assert_eq!(nanos(1), 0);
         }
 
+        // ON が定数 false であること自体を検査するテストなので、定数 assert の lint は意図的に許可する。
+        #[allow(clippy::assertions_on_constants)]
         #[test]
         fn disabled_by_default_costs_nothing() {
             reset();

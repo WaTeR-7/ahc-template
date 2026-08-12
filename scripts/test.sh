@@ -35,11 +35,19 @@ set -euo pipefail
 cd "$(dirname "$0")/.."
 
 BIN="${1:?usage: test.sh <bin_name> [num_seeds] [KEY=val ...]}"; shift
-NUM=100
-if [ $# -gt 0 ] && [[ "$1" =~ ^[0-9]+$ ]]; then NUM="$1"; shift; fi
+# 第2引数は「件数」(0..NUM-1) か **範囲 from:to**(to は含まない。mass.sh と同じ書式)。
+# 範囲は dev / holdout の分割に使う: dev=0:5000(調整用) / holdout=5000:10000(**最終確認専用**)。
+FROM=0; NUM=100
+if [ $# -gt 0 ] && [[ "$1" =~ ^[0-9]+$ ]]; then NUM="$1"; shift
+elif [ $# -gt 0 ] && [[ "$1" =~ ^[0-9]+:[0-9]+$ ]]; then FROM="${1%%:*}"; NUM=$(( ${1##*:} - FROM )); shift; fi
 ENVS=("$@")   # 残りは KEY=val。再コンパイル無しで掃引するための env チューナブル
 
 # ★コンテストごとに編集: 採点コマンド。cargo-compete でない公式 tools の採点器を指す。
+#   ⚠ **対話形式(interactive)の回はここが変わる**: 採点器を後から呼ぶのではなく、
+#     `tester <解答> < in > out` のように **tester が解答を子プロセスとして起動**し、
+#     スコアは **tester の stderr** に `Score = N` の形で出る(解答の eprintln も同じ stderr に混ざる)。
+#     ⇒ 実行行を TESTER 経由に差し替え、スコアの取り出しを stderr の grep に変える。
+#     計測 ms は tester プロセス全体の壁時計 ＝ ジャッジ側の処理も含む点に注意(実ジャッジは解答のみを計る)。
 SCORER="${SCORER:-./tools/target/release/vis}"
 # スコア行のパターン(BRE、キャプチャ1つ)。**数字を全部拾って最後を取る方式にはしない**:
 # 採点器は無効解のとき診断行も出すため、全桁 scrape は複数行の数字を1つに連結して
@@ -63,7 +71,7 @@ echo "seed,score,ms" > "$CSV"              # measure.py が読む per-seed 記�
 
 total=0; scored=0; missing=0; failed=0; invalid=0
 worst=""; worst_seed=-1; maxms=0
-for ((s=0; s<NUM; s++)); do
+for ((s=FROM; s<FROM+NUM; s++)); do
   in=$(printf "tools/in/%04d.txt" "$s")
   outf=$(printf "out/%04d.txt" "$s")
   if [ ! -f "$in" ]; then echo "seed $s: MISSING $in"; missing=$((missing+1)); continue; fi

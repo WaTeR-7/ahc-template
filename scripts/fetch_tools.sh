@@ -40,6 +40,16 @@ else
   echo "展開 -> tools/"
 fi
 
+# --- 1b. 自分たちの改造を当て直す(**ビルドの前**) ---
+#   tools/ は gitignore なので**正本は patches/**。取り直すたびにここで当て直す。
+#   当たらなくなったら本家が更新された合図 ── その時は patch を作り直す。
+for pf in patches/tools_*.patch; do
+  [ -e "$pf" ] || continue
+  patch -p0 -s < "$pf" \
+    && echo "patch  -> $pf" \
+    || echo "⚠ $pf が当たらない(本家が更新された？)。この改造は入っていない。" >&2
+done
+
 # --- 2. ビルド(gen/vis)。最新なら no-op で速い ---
 cargo build --release --manifest-path tools/Cargo.toml
 echo "build -> tools/target/release/{gen,vis}"
