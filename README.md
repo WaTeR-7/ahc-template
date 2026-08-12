@@ -61,6 +61,7 @@ A_ENV="AHC_NEW=0" scripts/same.sh 02_newmech 01_greedy 20
 | ファイル | 役割 |
 |---|---|
 | `CLAUDE.md` | AIエージェント向け**方法論・作業ルール**(前提/コード/進め方/検証と計測/記録の規律/git)。§0 で `problem/ai_guideline.txt` をインポートし未記入なら全停止 |
+| `AGENTS.md` | **Codex / 他エージェントの入口**。「`CLAUDE.md` を読め」と読む順番とハーネス差分だけを書いた薄いシム。**ルール本文は写さない**(唯一の例外が §0 の規約ゲート ── fail-closed を成立させるため**機構だけ**再掲する。条文は写さない) |
 | `problem/ai_guideline.txt` | その回の AI 利用規約を人が貼る(空placeholderを追跡・中身は毎回貼替) |
 | `src/bin/00_base.rs` | 基本部品(io/rng/timer)を貼った解答の最小スタート(追加部品は `lib/` からコピペ) |
 | `lib/` | 再利用部品を**種類ごと1ファイル**で分割保持(`mod` ブロック)。cargo の lib ターゲット `ahc_lib`(`lib/lib.rs` が include!)で `cargo check`/`test` 可。解答へはコピペ |
