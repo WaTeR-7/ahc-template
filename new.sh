@@ -20,8 +20,8 @@ rm -rf "$dest/.git" "$dest/target" "$dest/tools" "$dest/out" "$dest/rep" \
        "$dest/scripts/__pycache__"
 # パッケージ名をコンテストIDに
 sed -i "s/^name = \"sol\"/name = \"$id\"/" "$dest/Cargo.toml" 2>/dev/null || true
-# LOG のタイトル雛形
-sed -i "s/AHC<XXX>/${id^^}/" "$dest/LOG.md" 2>/dev/null || true
+# NOW のタイトル雛形
+sed -i "s/AHC<XXX>/${id^^}/" "$dest/NOW.md" 2>/dev/null || true
 
 cd "$dest"
 git init -q
@@ -35,7 +35,7 @@ echo "  1) 本コンテストの AI 利用規約を $dest/problem/ai_guideline.t
 echo "     └ 空だと CLAUDE.md の fail-closed で AI は『規約未読』とだけ返し全停止する"
 echo "  2) 問題ページ(要ログイン+参加登録)を『完全な形で保存』→ $dest/problem/ に置く"
 echo "  3) cd $dest && scripts/fetch_tools.sh   # tools.zip をDL→展開→build→in生成"
-echo "  4) vis 出力に合わせ scripts/test.sh の SCORER を確認, LOG.md §2 を記入"
+echo "  4) vis 出力に合わせ scripts/test.sh の SCORER を確認, NOW.md §2 を記入"
 echo "  5) cp src/bin/00_base.rs src/bin/01_<approach>.rs で着手(§1チェックリスト)"
-echo "  6) 実行可能解ができたら LOG.md §3『設計上の選択』register を埋める"
+echo "  6) 実行可能解ができたら NOW.md §3『設計上の選択』register を埋める"
 echo "     └ 行き詰まった時に戻る場所。負の連続は収束ではなく共通の上流前提を疑う合図"
