@@ -70,7 +70,7 @@ for f in "${files[@]}"; do
   # **どちらでも拾う**ようにしておく ── 片方だけにするとフックが静かに何もしなくなる。
   case "$f" in
     "$repo_root"/docs/*.md) ;;
-    "$repo_root"/docs/*/*.md) ;;   # docs/ev/, docs/frozen/ など分割後の下位ディレクトリ
+    "$repo_root"/docs/*/*.md) ;;   # docs/evidence/, docs/frozen/ など分割後の下位ディレクトリ
     "$repo_root"/*.md) ;;
     *) continue ;;
   esac
