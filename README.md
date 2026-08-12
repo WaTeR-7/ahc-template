@@ -72,7 +72,7 @@ AHC_ME=<user> python3 scripts/rank.py mass/SYS_new.csv mass/SYS_base.csv   # 何
 | `AGENTS.md` | **Codex / 他エージェントの入口**。「`CLAUDE.md` を読め」と読む順番とハーネス差分だけを書いた薄いシム。**ルール本文は写さない**(唯一の例外が §0 の規約ゲート ── fail-closed を成立させるため**機構だけ**再掲する。条文は写さない) |
 | `problem/ai_guideline.txt` | その回の AI 利用規約を人が貼る(空placeholderを追跡・中身は毎回貼替) |
 | `src/bin/00_base.rs` | 基本部品(io/rng/timer)を貼った解答の最小スタート(追加部品は `lib/` からコピペ) |
-| `lib/` | 再利用部品を**種類ごと1ファイル**で分割保持(`mod` ブロック)。cargo の lib ターゲット `ahc_lib`(`lib/lib.rs` が include!)で `cargo check`/`test` 可。解答へはコピペ |
+| `lib/` | **再利用部品**(io / timer / env / rng / grid / artic / matching / zobrist / prof)。種類ごと1ファイルの `mod` ブロックで、解答へは **`use` せずコピペ**。cargo の lib ターゲット `ahc_lib` として `cargo check`/`test` が通る＝検証済みの正本。一覧と使い分けは **[`lib/README.md`](lib/README.md)** |
 | `knowledge/` | **過去コンテストの蓄積**: `contests/`(参加記録) / `methods/`(**大枠の手法＝手持ちの一覧**) / `techniques/`(部品) + 構造カルテ8軸(軸3 は 2 段)と索引。テンプレに同梱されるので**新しいコンテストの開始時に手元にある**。**正本はテンプレ側** ── 回が終わったら書いてここへ戻す |
 | `scripts/` | **道具一式**(セットアップ / 走らせて測る / 判定する / **終了後に順位を直接測る** / 補助)。一覧と使い分けは **[`scripts/README.md`](scripts/README.md)** |
 | `LOG.md` | **このコンテストの記録**の雛形(用語集 / チェックリスト / 問題 / **設計上の選択 register** / 試したアプローチ / 発見+否定結果の棚 / 現行ベスト+実ジャッジ校正 / 変更履歴)。冒頭に「どの節に何を書くか」の対応表あり。**方法論は `CLAUDE.md` 側**(二重に書かない) |
