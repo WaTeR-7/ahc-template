@@ -71,5 +71,5 @@ echo "  Web ビジュアライザ: ${vis_url:-<HTMLから抽出できず。問�
 echo "  次にやること:"
 echo "    1) 採点確認: tools/target/release/vis <in> <out> の出力行を見て,"
 echo "       scripts/test.sh の score 抽出が合っているか確認(vis の 'Score = N' 等)。"
-echo "    2) NOW.md §1 に問題(盤面/制約/スコア式)を要約。"
+echo "    2) docs/SETUP.md に問題(盤面/制約/スコア式)を要約。"
 echo "    3) cp src/bin/00_base.rs src/bin/01_<approach>.rs で着手。"

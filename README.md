@@ -55,7 +55,7 @@ AHC_ME=<user> python3 scripts/rank.py mass/SYS_new.csv mass/SYS_base.csv   # 何
 
 このテンプレは **Claude Code(AI エージェント)で回す**前提で組んである。
 
-- **方針**: **方法論・作業ルール・過去の失敗例は `CLAUDE.md`、そのコンテストの記録は `NOW.md`** と
+- **方針**: **方法論・作業ルール・過去の失敗例は `CLAUDE.md`、そのコンテストの記録は `docs/`** と
   棲み分ける(両方に書くと必ず片方が古くなる)。AI はセッション開始時に CLAUDE.md を読んで従う。
   人間は README、AI は CLAUDE.md が入口。
 - **規約ガイド**: AHC の AI 利用規約は急速に変化する(縮小方向)ので、恒久テンプレに焼き込まない。
@@ -75,7 +75,7 @@ AHC_ME=<user> python3 scripts/rank.py mass/SYS_new.csv mass/SYS_base.csv   # 何
 | `lib/` | **再利用部品**(io / timer / env / rng / grid / artic / matching / zobrist / prof)。種類ごと1ファイルの `mod` ブロックで、解答へは **`use` せずコピペ**。cargo の lib ターゲット `ahc_lib` として `cargo check`/`test` が通る＝検証済みの正本。一覧と使い分けは **[`lib/README.md`](lib/README.md)** |
 | `knowledge/` | **過去コンテストの蓄積**: `contests/`(参加記録) / `methods/`(**大枠の手法＝手持ちの一覧**) / `techniques/`(部品) + 構造カルテ8軸(軸3 は 2 段)と索引。テンプレに同梱されるので**新しいコンテストの開始時に手元にある**。**正本はテンプレ側** ── 回が終わったら書いてここへ戻す |
 | `scripts/` | **道具一式**(セットアップ / 走らせて測る / 判定する / **終了後に順位を直接測る** / 補助)。一覧と使い分けは **[`scripts/README.md`](scripts/README.md)** |
-| `NOW.md` | **このコンテストの記録**の雛形(用語集 / チェックリスト / 問題 / **設計上の選択 register** / 試したアプローチ / 発見+否定結果の棚 / 現行ベスト+実ジャッジ校正 / 変更履歴)。冒頭に「どの節に何を書くか」の対応表あり。**方法論は `CLAUDE.md` 側**(二重に書かない) |
+| `docs/` | **このコンテストの記録**の雛形。**最初から役割ごとに分けてある**: `NOW.md`(盤面 ＝ チェックリスト/**register**/否定の棚/次の一手) / `SETUP.md`(前提 ＝ 問題/**構造カルテ8軸**/用語集/実行) / `EVIDENCE.md`(証拠 ＝ 測定 `EX###`/実ジャッジ校正) / `VERSIONS.md`・`HISTORY.md`(台帳)。地図と ID 凡例は `docs/README.md`。**方法論は `CLAUDE.md` 側**(二重に書かない) |
 | `.gitignore` | /target /tools /out /rep /vis /truth と生成 *.html/*.pdf を無視。**`mass/` は生データを無視しつつ分母(`best.csv`/`ub.csv`)だけ追跡**。**problem/ は追跡**(private前提) |
 | `.claude/settings.json` | Claude Code の**プロジェクト設定**。`Write\|Edit` の PostToolUse フックで `scripts/md2pdf-hook.sh` を呼ぶ(記録の PDF を自動再生成。非同期) |
 | `.codex/hooks.json` | Codex 側の同じフック(`apply_patch` にマッチ)＋ **Stop フックで完了音**。音は `~/.claude/sounds/done.wav` → 無ければ Windows のビープ → 無ければ無音(`\|\| true` で必ず成功する) |

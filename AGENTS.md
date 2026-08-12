@@ -25,9 +25,10 @@
 
 1. **[`CLAUDE.md`](CLAUDE.md)** — 作業ルールの全文（応答言語・進め方・検証と計測の作法・記録の規律・git）。**必ず全部読む。**
    Codex は `AGENTS.md` を自動で読むが `CLAUDE.md` は自動で読まない ⇒ **このファイルを読んだ時点で `CLAUDE.md` を開く。**
-2. **[`NOW.md`](NOW.md)** — このコンテストの記録（用語集 / 序盤チェックリスト / **構造カルテ** / **設計上の選択 register** /
+2. **[`docs/NOW.md`](docs/NOW.md)** — 盤面（序盤チェックリスト / **設計上の選択 register** /
    否定結果の棚 / 変更履歴）。冒頭に「どの節に何を書くか」の対応表がある。
-   ⚠ 記録が育つと **`docs/` に 3 分割**される（`NOW.md` = 盤面 / `evidence/` = 証拠 / `SETUP.md` = 前提 / `frozen/` = 凍結スナップショット）。
+   ⚠ 記録は**最初から `docs/` に分けてある**（`NOW.md` = 盤面 / `SETUP.md` = 前提・構造カルテ・用語集 /
+   `EVIDENCE.md` = 証拠 / `VERSIONS.md`・`HISTORY.md` = 台帳 / `frozen/` = 凍結スナップショット）。**地図は [`docs/README.md`](docs/README.md)。**
    その場合は `docs/README.md` から入る。
 3. **[`knowledge/README.md`](knowledge/README.md)** の索引 — **手法の索引 ＝ 手持ちの一覧**。
    構造カルテを埋めたら**軸で手法を選ぶ**。型が近い過去回があればその参加記録を読む。
