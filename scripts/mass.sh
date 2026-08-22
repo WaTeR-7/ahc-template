@@ -31,6 +31,18 @@
 set -euo pipefail
 cd "$(dirname "$0")/.."
 
+# 🔴 **掃引の二重起動を止める。** 2 本同時に走ると CPU を食い合い、TL 律速の解が半分しか
+#    仕事をしないので **両方の測定が壊れる**。しかも壊れたことは結果の数字に出ない。
+#    ⚠ 実際に踏んだ: 掃引の driver を 2 つ持ってしまい、同じ設定を 8 並列で流して 1 本を捨てた。
+#    pgrep での自己検出は「自分の親シェル」まで数えてしまうので **flock を使う**。
+LOCK="${LOCK:-/tmp/ahc-mass.lock}"
+exec 9>"$LOCK"
+if ! flock -n 9; then
+  echo "⚠ 既に掃引が走っている（$LOCK）。同居させると両方の測定が壊れる。" >&2
+  echo "  終わるまで待つ。意図的に同居させるなら LOCK=/tmp/other.lock を指定する。" >&2
+  exit 1
+fi
+
 BIN="${1:?usage: mass.sh <bin_name> [num_seeds | from:to] [KEY=val ...]}"; shift
 # 第2引数は「件数」(0..NUM-1) か **範囲 from:to**(to は含まない)。
 # 範囲は dev / holdout の分割に使う: dev=0:5000(調整用) / holdout=5000:10000(**最終確認専用**)。
