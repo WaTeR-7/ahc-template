@@ -17,7 +17,7 @@
 | script | 使い方 | 何をする |
 |---|---|---|
 | `test.sh` | `scripts/test.sh <bin> [num\|from:to] [KEY=val ...]` | **直列**で seed 掃引 + 採点。**per-seed の ms が信用できるのはこちらだけ** ⇒ 時間予算の判断に使う。`results.meta` の存在＝完了。★ 採点コマンド（`SCORER`）は回ごとに要編集。**対話形式の回は tester 経由に差し替える**（先頭のコメント参照） |
-| `mass.sh` | `scripts/mass.sh <bin> [num\|from:to] [KEY=val ...]` | **並列**で大量 seed を回し **score だけ**集める（採否の判定用。**ms は測らない**）。🔴 **採点器は対話問題なら `TESTER=<tester>`、非対話問題なら `SCORER=<vis>`**（`test.sh` と同じもの）。`INDIR=` で入力ディレクトリ、`OUT=` で出力先、`JOBS=` で並列数。<br>⚠ **並列度そのものが採否を変える**（per-case の実時間が膨らんで壁時計の弁を人工的に発火させる）⇒ **時間を食うレバーは `JOBS=3` で測り直す** |
+| `mass.sh` | `scripts/mass.sh <bin> [num\|from:to\|seedfile] [KEY=val ...]` | **並列**で大量 seed を回し **score だけ**集める（採否の判定用。**ms は測らない**）。🔴 **採点器は対話問題なら `TESTER=<tester>`、非対話問題なら `SCORER=<vis>`**（`test.sh` と同じもの）。`INDIR=` で入力ディレクトリ、`OUT=` で出力先、`JOBS=` で並列数。<br>⚠ **並列度そのものが採否を変える**（per-case の実時間が膨らんで壁時計の弁を人工的に発火させる）⇒ **時間を食うレバーは `JOBS=3` で測り直す**<br>🔴 **第2引数に seed リスト（1行1seed・`#` コメント可）を渡せる。** クラス別に設定を変える設計にしたら、**掃引の seed も帯で割る** ── 作用域の外の seed は平均 0・分散だけを持ち込むので `t` 値が「1/作用域の割合」だけ目減りする（28% の帯なら **3.6 倍の損**）。リストで回せば**同じ壁時計のまま検出力が数倍**になる。出力名にはリスト名が入る （`mass/<bin>__<envtag>__<listname>.csv`）。作り方は特徴量 csv から `awk` で 1 行（例: `awk -F, 'NR>1 && $2>=16 {print $1}' mass/feat.csv > run/seeds/c4_dev.txt`）|
 | `diag.sh` | `scripts/diag.sh <NNd_bin> [num\|from:to] [KEY=val ...]` | 計測版の **stderr（診断行）を大量 seed 分あつめる**（`mass.sh` は score 以外を捨てるので別物）。**壁時計ゲートを外して**走らせる（外さないと「計測のぶん打ち切りが早まった別の解」を測ることになる） |
 
 ## 3. 判定する

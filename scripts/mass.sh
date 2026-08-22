@@ -1,9 +1,16 @@
 #!/usr/bin/env bash
 # **大量 seed の score だけを並列で集める**(相対評価の判定用)。
-# Usage: scripts/mass.sh <bin_name> [num_seeds | from:to] [KEY=val ...]
-#   例:  scripts/mass.sh 01_ff 2000            # seed 0..1999
-#        scripts/mass.sh 01_ff 5000:10000       # **holdout**(最終確認専用の未使用 seed)
-#        scripts/mass.sh 02_x 2000 AHC_THR=30   # env はタグとしてファイル名にも入る
+# Usage: scripts/mass.sh <bin_name> [num_seeds | from:to | seedfile] [KEY=val ...]
+#   例:  scripts/mass.sh 01_ff 2000                 # seed 0..1999
+#        scripts/mass.sh 01_ff 5000:10000            # **holdout**(最終確認専用の未使用 seed)
+#        scripts/mass.sh 02_x 2000 AHC_THR=30        # env はタグとしてファイル名にも入る
+#        scripts/mass.sh 02_x run/seeds/c4_dev.txt   # 🔴 **seed リスト**(1行1seed)。下の「帯」を参照
+#
+# 🔴 **クラス別に設定を変える設計にしたら、掃引の seed も帯で割る**(knowledge/techniques/band-audit.md):
+#   作用域の外の seed は**平均 0・分散だけ**を持ち込むので、`t` 値が「1 / 作用域の割合」だけ目減りする
+#   ── 全体の 28% にしか効かない帯なら **3.6 倍の損**。seed リストで回せば
+#   **同じ壁時計のまま検出力が数倍**になる。
+#   ⚠ 帯を入れる前に取った null は偽陰性の可能性がある ⇒ 帯の導入時に過去の null を洗い直す。
 #
 # なぜ test.sh と別なのか(**相対評価のコンテスト**):
 #   ・最終順位は 2000 ケースの**相対スコア**で決まる。**絶対スコア和は seed ごとの ΣV の違い(入力ノイズ)で
@@ -47,8 +54,10 @@ BIN="${1:?usage: mass.sh <bin_name> [num_seeds | from:to] [KEY=val ...]}"; shift
 # 第2引数は「件数」(0..NUM-1) か **範囲 from:to**(to は含まない)。
 # 範囲は dev / holdout の分割に使う: dev=0:5000(調整用) / holdout=5000:10000(**最終確認専用**)。
 FROM=0; TO=1000
+SEEDFILE=""
 if [ $# -gt 0 ] && [[ "$1" =~ ^[0-9]+$ ]]; then TO="$1"; shift
-elif [ $# -gt 0 ] && [[ "$1" =~ ^[0-9]+:[0-9]+$ ]]; then FROM="${1%%:*}"; TO="${1##*:}"; shift; fi
+elif [ $# -gt 0 ] && [[ "$1" =~ ^[0-9]+:[0-9]+$ ]]; then FROM="${1%%:*}"; TO="${1##*:}"; shift
+elif [ $# -gt 0 ] && [ -f "$1" ]; then SEEDFILE="$1"; shift; fi
 ENVS=("$@")
 
 TESTER="${TESTER:-./tools/target/release/tester}"
@@ -74,7 +83,8 @@ cp "./target/release/$BIN" "$TMP/bin"      # 走行中のリビルドで差し�
 TAG=""
 if [ ${#ENVS[@]} -gt 0 ]; then TAG="__$(IFS=_; echo "${ENVS[*]}" | tr -d ' ')"; fi
 # 範囲を指定したときは**ファイル名に範囲を入れる**(dev と holdout の csv を混同しないため)
-if [ "$FROM" -ne 0 ]; then TAG="${TAG}__s${FROM}-${TO}"; fi
+if [ -n "$SEEDFILE" ]; then TAG="${TAG}__$(basename "$SEEDFILE" .txt)"
+elif [ "$FROM" -ne 0 ]; then TAG="${TAG}__s${FROM}-${TO}"; fi
 mkdir -p mass
 # OUT=<path> で出力先を上書きできる(同一設定を2回走らせて再現性を見る時などに使う)
 OUT="${OUT:-mass/${BIN}${TAG}.csv}"
@@ -102,10 +112,19 @@ rm -f "$err"
 WORKER
 chmod +x "$TMP/worker.sh"
 
-echo "== mass: bin=$BIN env=${ENVS[*]:-none} seeds=$FROM..$((TO-1)) (n=$((TO-FROM))) jobs=$JOBS =="
+# seed の供給元。リスト指定なら 1 行 1 seed(空行・`#` コメントは飛ばす)、そうでなければ連番。
+if [ -n "$SEEDFILE" ]; then
+  grep -vE '^\s*(#|$)' "$SEEDFILE" | tr -d ' \t' > "$TMP/seeds.txt"
+  NSEED=$(wc -l < "$TMP/seeds.txt")
+  echo "== mass: bin=$BIN env=${ENVS[*]:-none} seeds=$SEEDFILE (n=$NSEED) jobs=$JOBS =="
+else
+  seq "$FROM" $((TO-1)) > "$TMP/seeds.txt"
+  NSEED=$((TO-FROM))
+  echo "== mass: bin=$BIN env=${ENVS[*]:-none} seeds=$FROM..$((TO-1)) (n=$NSEED) jobs=$JOBS =="
+fi
 t0=$(date +%s)
-seq "$FROM" $((TO-1)) | TMPD="$TMP" TESTER="$TESTER" SCORER="$SCORER" MODE="$MODE" INDIR="$INDIR" ENVSTR="${ENVS[*]:-}" \
-  xargs -P "$JOBS" -n 1 "$TMP/worker.sh" > "$TMP/raw.csv"
+TMPD="$TMP" TESTER="$TESTER" SCORER="$SCORER" MODE="$MODE" INDIR="$INDIR" ENVSTR="${ENVS[*]:-}" \
+  xargs -a "$TMP/seeds.txt" -P "$JOBS" -n 1 "$TMP/worker.sh" > "$TMP/raw.csv"
 t1=$(date +%s)
 
 miss=$(grep -c ',MISSING$' "$TMP/raw.csv" || true)
