@@ -188,9 +188,26 @@ mod rng {
         pub fn below(&mut self, n: usize) -> usize {
             (self.u64() % n as u64) as usize
         }
+        /// [lo, hi) の一様整数。`lo < hi` であること。
+        #[inline]
+        pub fn range(&mut self, lo: usize, hi: usize) -> usize {
+            lo + self.below(hi - lo)
+        }
         #[inline]
         pub fn f64(&mut self) -> f64 {
             (self.u64() >> 11) as f64 / (1u64 << 53) as f64
+        }
+        /// Fisher-Yates シャッフル(その場)。初期解の多スタートや、候補の走査順をばらすのに。
+        pub fn shuffle<T>(&mut self, v: &mut [T]) {
+            for i in (1..v.len()).rev() {
+                let j = self.below(i + 1);
+                v.swap(i, j);
+            }
+        }
+        /// スライスから 1 つ選ぶ(空なら None)。
+        #[inline]
+        pub fn pick<'a, T>(&mut self, v: &'a [T]) -> Option<&'a T> {
+            if v.is_empty() { None } else { Some(&v[self.below(v.len())]) }
         }
     }
 }
@@ -226,7 +243,11 @@ fn main() {
 
     // ---- 初期解(貪欲/構築でまず制約を満たす1つ。ベースラインは best-of で退行させない) ----
 
-    // ---- 改善(焼きなまし/ビーム/局所探索。while timer.ms() < timer.tl) ----
+    // ---- 改善(焼きなまし/ビーム/局所探索) ----
+    // **骨格は lib/ に用意してある**(先頭コメントにループ本体の雛形がある。丸ごと貼って埋める):
+    //   焼きなまし → lib/anneal.rs   ビーム → lib/beam.rs(+ lib/zobrist.rs)
+    //   巡回路の近傍 → lib/perm.rs(2-opt / or-opt / swap の差分。総当たりで検証済み)
+    // 自分で while を書くなら壁時計は最外だけ(while timer.ms() < timer.tl):
     // 壁時計はこの**最外ループだけ**に使う。内部の重い段を壁時計で打ち切ると解が非決定的になり、
     // 掃引の比較も byte 一致検証も成立しない ⇒ 内部段は timer::Budget(作業量カウンタ)で打ち切る。
     // 遅さで詰まったら推測で削らず lib/prof.rs を貼って計測する(回数 × 1回のコストを両方出す)。

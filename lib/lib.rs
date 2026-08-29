@@ -14,3 +14,8 @@ include!("grid.rs");
 include!("zobrist.rs");
 include!("matching.rs");
 include!("artic.rs");
+include!("dsu.rs");
+include!("anneal.rs");
+include!("beam.rs");
+include!("perm.rs");
+include!("dijkstra.rs");

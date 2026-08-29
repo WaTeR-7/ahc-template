@@ -7,8 +7,23 @@
 //         let c = g.id(i, j); g.vwall[c] = true; // (i,j)-(i,j+1) を遮断(id を先に束縛して借用衝突回避)
 //         let dist = g.bfs(g.id(0, 0));           // 単一始点。未到達は u16::MAX
 //         let ap   = g.all_pairs();               // 全点間。ap[s*n + t](n = h*w)
+//         let (i, j) = g.rc(cell);                // id → 座標(id の逆)
+//         g.for_each_neighbor_dir(c, |nc, d| ..); // 方向つき(d は DIR / DIR_CHAR の添字)
+// **壁を1つも立てなければ素の格子**として使える(Grid::new だけで 4 近傍・BFS が揃う)。
 mod grid {
     use std::collections::VecDeque;
+
+    /// 4 近傍の (di, dj) と、出力に使う方向文字。**順序は 上 下 左 右**。
+    /// 🔴 **問題が使う文字と順序は毎回違う。条文を見て必ず差し替える**
+    ///    (ここを確かめずに書くと、全部の解が同じ向きに間違ったまま最後まで気づかない)。
+    pub const DIR: [(i32, i32); 4] = [(-1, 0), (1, 0), (0, -1), (0, 1)];
+    pub const DIR_CHAR: [u8; 4] = *b"UDLR";
+
+    /// マンハッタン距離(壁を無視した下界としてよく使う)。
+    #[inline]
+    pub fn manhattan(a: (usize, usize), b: (usize, usize)) -> usize {
+        a.0.abs_diff(b.0) + a.1.abs_diff(b.1)
+    }
 
     pub struct Grid {
         pub h: usize,
@@ -27,21 +42,34 @@ mod grid {
             i * self.w + j
         }
 
+        /// id → (行, 列)。`id` の逆。
+        #[inline]
+        pub fn rc(&self, cell: usize) -> (usize, usize) {
+            (cell / self.w, cell % self.w)
+        }
+
         /// 壁を越えずに到達できる 4 近傍セル id を `f` に渡す(上下左右)。
         #[inline]
         pub fn for_each_neighbor(&self, cell: usize, mut f: impl FnMut(usize)) {
+            self.for_each_neighbor_dir(cell, |nc, _| f(nc));
+        }
+
+        /// 方向つきの 4 近傍。`f(隣の id, 方向の添字)` ── 添字は `DIR` / `DIR_CHAR` と対応する
+        /// (0=上 1=下 2=左 3=右)。移動列をそのまま出力に組み立てるときはこちら。
+        #[inline]
+        pub fn for_each_neighbor_dir(&self, cell: usize, mut f: impl FnMut(usize, usize)) {
             let j = cell % self.w;
             if cell >= self.w && !self.hwall[cell - self.w] {
-                f(cell - self.w); // 上
+                f(cell - self.w, 0); // 上
             }
             if cell + self.w < self.h * self.w && !self.hwall[cell] {
-                f(cell + self.w); // 下
+                f(cell + self.w, 1); // 下
             }
             if j > 0 && !self.vwall[cell - 1] {
-                f(cell - 1); // 左
+                f(cell - 1, 2); // 左
             }
             if j + 1 < self.w && !self.vwall[cell] {
-                f(cell + 1); // 右
+                f(cell + 1, 3); // 右
             }
         }
 
@@ -91,6 +119,37 @@ mod grid {
             g.vwall[c] = true; // (0,1)-(0,2) を遮断
             let d = g.bfs(g.id(0, 0));
             assert_eq!(d, vec![0, 1, u16::MAX]);
+        }
+
+        #[test]
+        fn rc_is_the_inverse_of_id() {
+            let g = Grid::new(4, 5);
+            for i in 0..g.h {
+                for j in 0..g.w {
+                    assert_eq!(g.rc(g.id(i, j)), (i, j));
+                }
+            }
+        }
+
+        #[test]
+        fn neighbor_dir_matches_the_dir_table() {
+            // 方向の添字が DIR の (di, dj) と一致していること(ここがズレると出力が全部逆を向く)
+            let g = Grid::new(3, 3);
+            let c = g.id(1, 1);
+            let mut seen = vec![];
+            g.for_each_neighbor_dir(c, |nc, d| seen.push((nc, d)));
+            assert_eq!(seen.len(), 4);
+            for (nc, d) in seen {
+                let (i, j) = g.rc(c);
+                let (di, dj) = super::DIR[d];
+                let want = g.id((i as i32 + di) as usize, (j as i32 + dj) as usize);
+                assert_eq!(nc, want, "方向 {} ({}) がテーブルと違う", d, super::DIR_CHAR[d] as char);
+            }
+            // for_each_neighbor は方向つき版と同じ集合を返す(委譲しても壊れていない)
+            let mut plain = vec![];
+            g.for_each_neighbor(c, |nc| plain.push(nc));
+            assert_eq!(plain, vec![g.id(0, 1), g.id(2, 1), g.id(1, 0), g.id(1, 2)]);
+            assert_eq!(super::manhattan((0, 0), (2, 3)), 5);
         }
 
         #[test]
