@@ -73,7 +73,7 @@ byte 一致を保ったまま整数化できた）。
 
 **実績**: ahc069 で 2 回（整数キー化 / 位置評価の一般化）。うち 1 回は**食い違いを実際に検出**した。ahc072 で 1 回（入れ直しの DP の高速化 3.7 倍）。
 
-**昇格状況**: **→ `CLAUDE.md §4a` 済**（byte 一致の適用範囲の宣言とセットで）。
+**昇格状況**: **→ `CLAUDE.md` 済**（長い版は [`rules/measurement.md`](../rules/measurement.md)）（byte 一致の適用範囲の宣言とセットで）。
 
 **別名・関連**: differential testing / shadow implementation / A-B oracle。
 [事前に狭める](narrow-before-verify.md) と同じく「作ってから検証」を避ける方向だが、

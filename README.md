@@ -55,7 +55,7 @@ AHC_ME=<user> python3 scripts/rank.py mass/SYS_new.csv mass/SYS_base.csv   # 何
 
 このテンプレは **Claude Code(AI エージェント)で回す**前提で組んである。
 
-- **方針**: **方法論・作業ルール・過去の失敗例は `CLAUDE.md`、そのコンテストの記録は `docs/`** と
+- **方針**: **作業ルールは `CLAUDE.md`（短い形。根拠と過去の失敗例は `knowledge/rules/`）、そのコンテストの記録は `docs/`** と
   棲み分ける(両方に書くと必ず片方が古くなる)。AI はセッション開始時に CLAUDE.md を読んで従う。
   人間は README、AI は CLAUDE.md が入口。
 - **規約ガイド**: AHC の AI 利用規約は急速に変化する(縮小方向)ので、恒久テンプレに焼き込まない。
@@ -68,12 +68,12 @@ AHC_ME=<user> python3 scripts/rank.py mass/SYS_new.csv mass/SYS_base.csv   # 何
 
 | ファイル | 役割 |
 |---|---|
-| `CLAUDE.md` | AIエージェント向け**方法論・作業ルール**(前提/コード/進め方/検証と計測/記録の規律/git)。§0 で `problem/ai_guideline.txt` をインポートし未記入なら全停止 |
+| `CLAUDE.md` | AIエージェント向け**作業ルールの短い形**(前提/コード/進め方/検証と計測/記録の規律/git。**250 行まで**。根拠・失敗例つきの長い版は `knowledge/rules/` で、どの作業の前にどれを開くかの表が §1 にある)。§0 で `problem/ai_guideline.txt` をインポートし未記入なら全停止 |
 | `AGENTS.md` | **Codex / 他エージェントの入口**。「`CLAUDE.md` を読め」と読む順番とハーネス差分だけを書いた薄いシム。**ルール本文は写さない**(唯一の例外が §0 の規約ゲート ── fail-closed を成立させるため**機構だけ**再掲する。条文は写さない) |
 | `problem/ai_guideline.txt` | その回の AI 利用規約を人が貼る(空placeholderを追跡・中身は毎回貼替) |
 | `src/bin/00_base.rs` | 基本部品(io/rng/timer)を貼った解答の最小スタート(追加部品は `lib/` からコピペ) |
 | `lib/` | **再利用部品**(io / timer / env / rng / grid / artic / matching / zobrist / prof / sprof)。種類ごと1ファイルの `mod` ブロックで、解答へは **`use` せずコピペ**。cargo の lib ターゲット `ahc_lib` として `cargo check`/`test` が通る＝検証済みの正本。一覧と使い分けは **[`lib/README.md`](lib/README.md)** |
-| `knowledge/` | **過去コンテストの蓄積**: `contests/`(参加記録) / `methods/`(**大枠の手法＝手持ちの一覧**) / `techniques/`(部品) + 構造カルテ8軸(軸3 は 2 段)と索引。テンプレに同梱されるので**新しいコンテストの開始時に手元にある**。**正本はテンプレ側** ── 回が終わったら書いてここへ戻す |
+| `knowledge/` | **過去コンテストの蓄積**: `contests/`(参加記録) / `methods/`(**大枠の手法＝手持ちの一覧**) / `techniques/`(部品) / `rules/`(**`CLAUDE.md` の規則の長い版**) + 構造カルテ8軸(軸3 は 2 段)と索引。テンプレに同梱されるので**新しいコンテストの開始時に手元にある**。**正本はテンプレ側** ── 回が終わったら書いてここへ戻す |
 | `scripts/` | **道具一式**(セットアップ / 走らせて測る / 判定する / **終了後に順位を直接測る** / 補助)。一覧と使い分けは **[`scripts/README.md`](scripts/README.md)** |
 | `docs/` | **このコンテストの記録**の雛形。**最初から役割ごとに分けてある**: `NOW.md`(盤面 ＝ チェックリスト/**register**/否定の棚/次の一手) / `SETUP.md`(前提 ＝ 問題/**構造カルテ8軸**/用語集/実行) / `EVIDENCE.md`(証拠 ＝ 測定 `EX###`/実ジャッジ校正) / `VERSIONS.md`・`HISTORY.md`(台帳)。地図と ID 凡例は `docs/README.md`。**方法論は `CLAUDE.md` 側**(二重に書かない) |
 | `.gitignore` | /target /tools /out /rep /vis /truth と生成 *.html/*.pdf を無視。**`mass/` は生データを無視しつつ分母(`best.csv`/`ub.csv`)だけ追跡**。**problem/ は追跡**(private前提) |
