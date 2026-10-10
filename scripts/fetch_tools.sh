@@ -15,7 +15,7 @@ force=0
 [ "${1:-}" = "--force" ] && force=1
 
 # 保存HTML(vis URL 提示と、必要なら zip URL 抽出に使う)
-html=$(ls problem/*.html 2>/dev/null | head -1 || true)
+html=$(ls problem/*.html problem/statement.md 2>/dev/null | head -1 || true)  # 保存HTMLを要約 md に置き換えた回は、md に書いた URL 行を使う
 
 # --- 1. 展開済みか? 未展開/--force なら DL する ---
 if [ -f tools/src/bin/gen.rs ] && [ "$force" -eq 0 ]; then

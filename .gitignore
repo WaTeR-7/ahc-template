@@ -7,6 +7,7 @@
 /results.meta.tmp
 /sweep.log
 scripts/__pycache__
+research/__pycache__
 /vis
 /diag/
 

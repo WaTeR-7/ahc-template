@@ -24,7 +24,7 @@
 
 | script | 使い方 | 何をする |
 |---|---|---|
-| `rel.py` | `python3 scripts/rel.py <A.csv> <B.csv> [--seeds a:b] [--group <col>] [--ref <csv>]` | **相対評価の判定**。`Δrel`（算術）と `Δlog`（対数平均）を **paired** で出し、`±se` / 必要 n / 群別分解まで。**両方が +2se で初めて採用**。⚠ **先頭が基準**（逆に置くと符号を読み違える） |
+| `rel.py` | `python3 scripts/rel.py <A.csv> <B.csv> [--seeds a:b] [--group <col>] [--ref <csv>] [--min\|--max]` | 🔴 **最大化/最小化は先頭の `OBJECTIVE` を回ごとに編集**（`--min`/`--max` で一時上書き。Δ は常に良くなる向きが正。最小化では score ≤ 0 を無効解として扱う）。**相対評価の判定**。`Δrel`（算術）と `Δlog`（対数平均）を **paired** で出し、`±se` / 必要 n / 群別分解まで。**両方が +2se で初めて採用**。⚠ **先頭が基準**（逆に置くと符号を読み違える） |
 | `measure.py` | `python3 scripts/measure.py [results.csv]` | 赤字の構造を測る（特徴量 × 成績の相関 / バケット）。`parse` と `feats` を回ごとに埋める |
 | `same.sh` | `A_ENV="AHC_X=0" scripts/same.sh <新> <前> [num]` | **出力の byte 一致**を照合（同じバイナリを 2 回走らせる決定性の自己チェック付き）。新機構は「**OFF で前版と一致**」を確認してから有効化する。<br>⚠ **核を書き換えるときは byte 一致では通らない** ⇒ assert 同値検査に切り替える（[`../knowledge/techniques/equivalence-by-assert.md`](../knowledge/techniques/equivalence-by-assert.md)） |
 
@@ -41,6 +41,7 @@
 
 | script | 使い方 | 何をする |
 |---|---|---|
+| `sprof.py` | `python3 scripts/sprof.py <debug 情報つきの bin> <src.rs> <番地のファイル>... [--names f1,f2] [--top N]` | `lib/sprof.rs` が `PROF_OUT` に書いた命令の番地を addr2line で**関数ごと・行ごとの割合**に直す。bin は `CARGO_PROFILE_RELEASE_DEBUG=2 cargo build --release --bin <bin> --target-dir <別の場所>` で作る。**細かい区間ごとにタイマーを挟む計測（`lib/prof.rs`）は軽い段を水増しする**ので、内側ループの中の割合はこちらで見る |
 | `vis.sh` | `scripts/vis.sh` / `snap <版名> [seed…]` / `fetch` / `stop` | 公式 web ビジュアライザを**ローカルで**動かす（ディレクトリ選択で seed 切替・ターンスライダー・**自前の重ね描き**）。`CONTEST=` で回を指定（既定は repo のディレクトリ名）。⚠ `vis/` は再配布しない |
 | `md2pdf-hook.sh` | （フックから自動実行） | **repo 直下の `*.md` と `docs/*.md`** を編集したら PDF を再生成する PostToolUse フック本体（Claude Code / Codex 両対応）。`md2pdf` が無ければ黙って何もしない |
 

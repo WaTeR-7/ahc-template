@@ -3,9 +3,18 @@
 
 Usage:
   python3 scripts/rel.py <csv> [<csv> ...] [--update-best] [--best mass/best.csv]
-                         [--ref mass/ref.csv] [--group pond|occ|r|theta|lawn|sumv] [--top N]
+                         [--ref mass/ref.csv] [--group <feat.csv の列>] [--top N] [--seeds a:b] [--min|--max]
 
-## 何を見るか（**各ケース `1e9 × 自分/全参加者最大` の和**で順位が決まる形式）
+## 🔴 最大化か最小化か（★回ごとに下の `OBJECTIVE` を編集する。`--min` / `--max` で一時的に上書き）
+
+- **max**: 各ケース `1e9 × 自分 / 全参加者最大`。分母 `D_i` = 最大、`rel_i = score_i / D_i`。
+- **min**: 各ケース `1e9 × 全参加者最小 / 自分`（例: AHC072）。分母 `D_i` = 最小、`rel_i = D_i / score_i`。
+- どちらでも **Δ は「良くなる向きが正」**に揃える（min では score が下がると Δrel・Δlog が正）。
+- `score <= 0` は**無効解**（vis が不正出力に Score = 0 を返す）として扱う: `rel_i = 0`。
+  対数は max では 1 に丸め（従来どおり）、min では `INVALID_MIN_SCORE` とみなす（＝ 大敗として数える）。
+  分母・best の計算からは除く（0 が「最小」になって分母を壊すのを防ぐ）。
+
+## 何を見るか（以下は max の書き方。min では「自分/最大」を「最小/自分」に読み替える）
 
 真の目的関数は `Σ_i score_i / (全参加者の最大)_i`。分母は観測できないので、**分母の選び方＝seed の重み付けの
 選び方**になる。そこで2つの統計を並べて出す:
@@ -27,6 +36,11 @@ import csv
 import math
 import os
 import sys
+
+# ★回ごとに編集: "max"（自分/全参加者最大）か "min"（全参加者最小/自分）。
+OBJECTIVE = "max"
+# min で無効解（score <= 0）を対数に入れるときに使う値（どの有効解よりも十分悪い値）
+INVALID_MIN_SCORE = 10**9
 
 
 def load(path):
@@ -55,6 +69,36 @@ def main():
             del args[i : i + 2]
             return v
         return default
+
+    objective = OBJECTIVE
+    for flag in ("--min", "--max"):
+        if flag in args:
+            args.remove(flag)
+            objective = flag[2:]
+    minimize = objective == "min"
+    # 良くなる向きを正にする符号（対数の差に掛ける）
+    sgn = -1 if minimize else 1
+
+    def valid(v):
+        return v > 0
+
+    def ln_score(v):
+        if minimize:
+            return math.log(v if valid(v) else INVALID_MIN_SCORE)
+        return math.log(max(v, 1))
+
+    def rel_of(v, dn):
+        if minimize:
+            return dn / v if valid(v) else 0.0
+        return v / dn
+
+    def better(a, b):
+        """a が b より良い（無効解はどの有効解より悪い）"""
+        if not valid(a):
+            return False
+        if not valid(b):
+            return True
+        return a < b if minimize else a > b
 
     update_best = "--update-best" in args
     if update_best:
@@ -85,28 +129,36 @@ def main():
         print("共通 seed が無い")
         return
 
-    # 分母 D_i（算術 rel 用）。--ref があれば固定分母、無ければ「与えた版 + best.csv」の max
+    # 分母 D_i（算術 rel 用）。--ref があれば固定分母、無ければ「与えた版 + best.csv」の最良（max / min）
+    agg = "min" if minimize else "max"
     if ref:
         den = {s: max(ref[s], 1) for s in seeds}
         den_kind = f"--ref {ref_path}（固定分母）"
     else:
         den = {}
         for s in seeds:
-            m = max([d[s] for _, d in runs] + ([best[s]] if s in best else []))
-            den[s] = m if m > 0 else 1
-        den_kind = f"与えた版 + {best_path} の max（**動く分母** ⇒ 絶対値は比較に使わない）"
+            cand = [d[s] for _, d in runs] + ([best[s]] if s in best else [])
+            if minimize:
+                ok = [v for v in cand if valid(v)]
+                den[s] = min(ok) if ok else 1
+            else:
+                m = max(cand)
+                den[s] = m if m > 0 else 1
+        den_kind = f"与えた版 + {best_path} の {agg}（**動く分母** ⇒ 絶対値は比較に使わない）"
 
     nzero_total = sum(1 for s in seeds for _, d in runs if d[s] <= 0)
     if nzero_total:
-        print(f"⚠ score<=0 の行が {nzero_total} 件ある（対数では 1 に丸める。**無効解を隠さないこと**）")
+        how = f"rel=0、対数では {INVALID_MIN_SCORE:,} とみなす" if minimize else "対数では 1 に丸める"
+        print(f"⚠ score<=0 の行が {nzero_total} 件ある（無効解: {how}。**無効解を隠さないこと**）")
 
+    print(f"objective: {objective}（{'全参加者最小/自分' if minimize else '自分/全参加者最大'}。Δ は良くなる向きが正）")
     print(f"seeds: n={len(seeds)}   分母: {den_kind}")
     print(f"{'bin':<26}{'rel(算術, /1e9)':>18}{'log(幾何平均)':>16}{'abs avg':>14}{'best獲得':>9}{'score=0':>8}")
     rel, lg = {}, {}
     for name, d in runs:
-        rel[name] = [d[s] / den[s] for s in seeds]
-        lg[name] = [math.log(max(d[s], 1)) for s in seeds]
-        nbest = sum(1 for s in seeds if d[s] >= den[s])
+        rel[name] = [rel_of(d[s], den[s]) for s in seeds]
+        lg[name] = [ln_score(d[s]) for s in seeds]
+        nbest = sum(1 for s in seeds if not better(den[s], d[s]) and valid(d[s]))
         nzero = sum(1 for s in seeds if d[s] == 0)
         print(
             f"{name:<26}{sum(rel[name]) / len(seeds) * 1e9:>18,.0f}"
@@ -119,9 +171,9 @@ def main():
         print(f"\n=== paired 比較（基準 = {base}）  **両方が +2se で初めて採用** ===")
         for name, _ in runs[1:]:
             dr, sr = stats([(rel[name][i] - rel[base][i]) * 1e9 for i in range(len(seeds))])
-            dl, sl = stats([lg[name][i] - lg[base][i] for i in range(len(seeds))])
-            win = sum(1 for i in range(len(seeds)) if lg[name][i] > lg[base][i])
-            lose = sum(1 for i in range(len(seeds)) if lg[name][i] < lg[base][i])
+            dl, sl = stats([sgn * (lg[name][i] - lg[base][i]) for i in range(len(seeds))])
+            win = sum(1 for i in range(len(seeds)) if sgn * (lg[name][i] - lg[base][i]) > 0)
+            lose = sum(1 for i in range(len(seeds)) if sgn * (lg[name][i] - lg[base][i]) < 0)
             ok_r, ok_l = dr > 2 * sr, dl > 2 * sl
             bad_r, bad_l = dr < -2 * sr, dl < -2 * sl
             if ok_r and ok_l:
@@ -179,22 +231,28 @@ def main():
                         sub = [s for s in gs if bucket(s) == b]
                         if not sub:
                             continue
-                        m, se = stats([lg[nm][idx[s]] - lg[base][idx[s]] for s in sub])
+                        m, se = stats([sgn * (lg[nm][idx[s]] - lg[base][idx[s]]) for s in sub])
                         line += f"  {m * 100:>+7.3f}±{se * 100:<6.3f}"
                     print(line)
 
     name0, d0 = runs[0]
-    gaps = sorted(seeds, key=lambda s: d0[s] / den[s])
+    r0 = dict(zip(seeds, rel[name0]))
+    gaps = sorted(seeds, key=lambda s: r0[s])
     print(f"\n=== {name0} が分母に負けている seed (worst {top}) ===")
     for s in gaps[:top]:
-        print(f"  seed {s:>5}: {d0[s]:>12,}  / {den[s]:>12,}  = {d0[s] / den[s]:.3f}")
+        print(f"  seed {s:>5}: {d0[s]:>12,}  vs 分母 {den[s]:>12,}  rel = {r0[s]:.3f}")
 
     if update_best:
         newbest = dict(best)
         upd = 0
         for s in seeds:
-            m = max(d[s] for _, d in runs)
-            if m > newbest.get(s, -1):
+            m = None
+            for _, d in runs:
+                if m is None or better(d[s], m):
+                    m = d[s]
+            if not valid(m):
+                continue
+            if s not in newbest or better(m, newbest[s]):
                 newbest[s] = m
                 upd += 1
         os.makedirs(os.path.dirname(best_path) or ".", exist_ok=True)

@@ -10,6 +10,7 @@ include!("rng.rs");
 include!("timer.rs");
 include!("env.rs");
 include!("prof.rs");
+include!("sprof.rs");
 include!("grid.rs");
 include!("zobrist.rs");
 include!("matching.rs");

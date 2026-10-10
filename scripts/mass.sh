@@ -62,8 +62,11 @@ ENVS=("$@")
 
 TESTER="${TESTER:-./tools/target/release/tester}"
 SCORER="${SCORER:-}"          # 非対話問題はこちら(test.sh と同じ vis 系の採点器)
+# tester が無い(＝ 非対話問題)なら vis を既定の採点器にする
+if [ -z "$SCORER" ] && [ ! -x "$TESTER" ] && [ -x ./tools/target/release/vis ]; then SCORER=./tools/target/release/vis; fi
 # 入力ディレクトリ。**本番と同一の 2000 ケース**は `tools/in_sys`(公式 input.csv の seed で生成)。
-INDIR="${INDIR:-tools/in}"
+# 大量 seed 用の入力を tools/in_mass に作ってあればそちらを既定にする(作り方は docs/SETUP.md「測定の seed 集合」)。無ければ tools/in。
+if [ -d tools/in_mass ]; then INDIR="${INDIR:-tools/in_mass}"; else INDIR="${INDIR:-tools/in}"; fi
 JOBS="${JOBS:-$(( $(nproc) > 2 ? $(nproc) - 1 : 1 ))}"
 if [ -n "$SCORER" ]; then
   [ -x "$SCORER" ] || { echo "no scorer: $SCORER"; exit 1; }
