@@ -42,16 +42,20 @@ in=$(printf "tools/in/%04d.txt" "$s")
 err="$TMPD/err.$s"
 if [ -n "$ENVSTR" ]; then env $ENVSTR "$TMPD/bin" < "$in" > /dev/null 2> "$err" || true
 else "$TMPD/bin" < "$in" > /dev/null 2> "$err" || true; fi
-sed "s/^/$s\t/" "$err"
+# seed ごとの別ファイルに書く。共有のパイプへ直接書くと、1 seed の出力が 4KB を超えたときに他の seed の行と混ざる(mm167 で 1 行が切れた)
+sed "s/^/$s\t/" "$err" > "$TMPD/outs/$s.txt"
 rm -f "$err"
 WORKER
 chmod +x "$TMP/worker.sh"
+mkdir -p "$TMP/outs"
 
 echo "== diag: bin=$BIN env=${ENVS[*]:-none} seeds=$FROM..$((TO-1)) (n=$((TO-FROM))) jobs=$JOBS =="
 t0=$(date +%s)
 seq "$FROM" $((TO-1)) | TMPD="$TMP" ENVSTR="${ENVS[*]:-}" \
-  xargs -P "$JOBS" -n 1 "$TMP/worker.sh" > "$TMP/raw.txt"
+  xargs -P "$JOBS" -n 1 "$TMP/worker.sh"
 t1=$(date +%s)
-sort -n -k1,1 "$TMP/raw.txt" > "$OUT"
+# seed の順に連結する(sort -k1,1 は同じ seed の中の行まで並べ替えてしまうので使わない)
+: > "$OUT"
+for s in $(seq "$FROM" $((TO-1))); do [ -f "$TMP/outs/$s.txt" ] && cat "$TMP/outs/$s.txt" >> "$OUT"; done
 echo "wall         : $((t1-t0))s (並列 $JOBS ⇒ per-seed ms は測っていない)"
 echo "out          : $OUT  ($(wc -l < "$OUT") 行)"
