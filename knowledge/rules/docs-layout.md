@@ -57,4 +57,5 @@
 - ⚠ **`AGENTS.md` はリポジトリ直下に置く**(Claude Code も Codex も `./AGENTS.md` を自動で読むため移動できない)。
 - 🔴 **入口は `AGENTS.md` の 1 枚だけ。`CLAUDE.md` / `CLAUDE.local.md` を作らない。** ルールを 2 か所に書くと二重管理になるうえ、
   この repo か上位のディレクトリに `CLAUDE.md` があると Claude Code は既定で `AGENTS.md` を読まず、**§0 の規約ゲートが黙って消える**(fail-closed が fail-open になる)。
+- ⚠ **規約の条文を `AGENTS.md` に写さない**(回ごとに変わるので、写した瞬間に古くなる)。読むのは常に `problem/ai_guideline.txt`。
 - **上限は 250 行と 32 KiB の両方**。Codex は既定で `AGENTS.md` を 32 KiB までしか読まない(`project_doc_max_bytes`)。日本語は 1 文字 3 バイトなので、行より先にこちらに当たりうる。
