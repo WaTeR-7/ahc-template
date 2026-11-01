@@ -27,19 +27,19 @@ cd ~/ahc/ahc069
 #  3) 問題ページ(要ログイン+参加登録)を「完全な形で保存」→ problem/ に置く
 scripts/fetch_tools.sh           # 保存HTML内のCDN URLから tools.zip をDL→build→in生成(全自動)
 # vis 出力に合わせ scripts/test.sh の SCORER を確認, NOW §2 を記入
-cp src/bin/00_base.rs src/bin/01_greedy.rs   # 1アプローチ=1ファイル(必要な部品は lib/ からコピペ)
-cargo run --release --bin 01_greedy < tools/in/0000.txt > out.txt
-scripts/test.sh 01_greedy 100                # seed掃引+採点集計(results.meta の存在＝完了)
+cp src/bin/000_base.rs src/bin/001_greedy.rs   # 1アプローチ=1ファイル(必要な部品は lib/ からコピペ)
+cargo run --release --bin 001_greedy < tools/in/0000.txt > out.txt
+scripts/test.sh 001_greedy 100                # seed掃引+採点集計(results.meta の存在＝完了)
 python3 scripts/measure.py results.csv       # 赤字の構造を測る
 # 相対評価の回はここから: 大量 seed を並列で回して paired で判定する
-scripts/mass.sh 01_greedy 2000               # mass/01_greedy.csv (score だけ)
-python3 scripts/rel.py mass/01_greedy.csv mass/02_newmech.csv   # Δrel と Δlog(両方 +2se で採用)
+scripts/mass.sh 001_greedy 2000               # mass/001_greedy.csv (score だけ)
+python3 scripts/rel.py mass/001_greedy.csv mass/002_newmech.csv   # Δrel と Δlog(両方 +2se で採用)
 # 機構を足したら: 無効化した設定で前版と byte 一致することを先に確認する
-A_ENV="AHC_NEW=0" scripts/same.sh 02_newmech 01_greedy 20
+A_ENV="AHC_NEW=0" scripts/same.sh 002_newmech 001_greedy 20
 
 # ---- コンテスト終了後(延長戦・反省会): 推定を挟まず順位を直接測る ----
 scripts/fetch_truth.sh                       # 真値 + 本番と同一の入力(tools/in_sys)
-INDIR=tools/in_sys OUT=mass/SYS_new.csv scripts/mass.sh 03_new 2000
+INDIR=tools/in_sys OUT=mass/SYS_new.csv scripts/mass.sh 003_new 2000
 AHC_ME=<user> python3 scripts/rank.py mass/SYS_new.csv mass/SYS_base.csv   # 何位相当か
 ```
 
@@ -78,7 +78,7 @@ AHC_ME=<user> python3 scripts/rank.py mass/SYS_new.csv mass/SYS_base.csv   # 何
 |---|---|
 | `AGENTS.md` | AIエージェント向け**作業ルールの短い形**(前提/コード/進め方/検証と計測/記録の規律/git。**250 行・32 KiB まで**。根拠・失敗例つきの長い版は `knowledge/rules/` で、どの作業の前にどれを開くかの表が §1 にある)。§0 で `problem/ai_guideline.txt` を読み、規約か部門が未記入なら全停止。**Claude Code と Codex の共通の入口**で、`CLAUDE.md` は置かない |
 | `problem/ai_guideline.txt` | その回の AI 利用規約を人が貼る。部門制の回は先頭に `部門: <部門名>`(空placeholderを追跡・中身は毎回貼替) |
-| `src/bin/00_base.rs` | 基本部品(io/rng/timer)を貼った解答の最小スタート(追加部品は `lib/` からコピペ) |
+| `src/bin/000_base.rs` | 基本部品(io/rng/timer)を貼った解答の最小スタート(追加部品は `lib/` からコピペ) |
 | `lib/` | **再利用部品**(io / timer / env / rng / grid / artic / matching / zobrist / prof / sprof)。種類ごと1ファイルの `mod` ブロックで、解答へは **`use` せずコピペ**。cargo の lib ターゲット `ahc_lib` として `cargo check`/`test` が通る＝検証済みの正本。一覧と使い分けは **[`lib/README.md`](lib/README.md)** |
 | `knowledge/` | **過去コンテストの蓄積**: `contests/`(参加記録) / `methods/`(**大枠の手法＝手持ちの一覧**) / `techniques/`(部品) / `rules/`(**`AGENTS.md` の規則の長い版**) + 構造カルテ8軸(軸3 は 2 段)と索引。テンプレに同梱されるので**新しいコンテストの開始時に手元にある**。**正本はテンプレ側** ── 回が終わったら書いてここへ戻す |
 | `scripts/` | **道具一式**(セットアップ / 走らせて測る / 判定する / **終了後に順位を直接測る** / 補助)。一覧と使い分けは **[`scripts/README.md`](scripts/README.md)** |

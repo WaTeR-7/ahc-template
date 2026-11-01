@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 # ソルバを seed 掃引して採点集計。
 # Usage: scripts/test.sh <bin_name> [num_seeds] [KEY=val ...]
-#   例:  scripts/test.sh 01_greedy 100
-#        scripts/test.sh 01_greedy 100 AHC_TL=3000 AHC_MODE=2   # env は解に渡され、サマリに記録される
+#   例:  scripts/test.sh 001_greedy 100
+#        scripts/test.sh 001_greedy 100 AHC_TL=3000 AHC_MODE=2   # env は解に渡され、サマリに記録される
 #
 # 前提:
 #   ・入力    : tools/in/0000.txt ... (公式generatorで生成しておく)
@@ -23,7 +23,7 @@
 #                    (リファクタ/高速化は旧設定で出力が完全一致することを確認してから有効化する)。
 #
 # 100 seed × 2秒 = 3.5分。フォアグラウンドで待てない場合は
-#   nohup scripts/test.sh 01_greedy 100 > sweep.log 2>&1 &
+#   nohup scripts/test.sh 001_greedy 100 > sweep.log 2>&1 &
 # で投げ、results.meta の出現を待つ。
 #
 # 注意:

@@ -1,10 +1,10 @@
 #!/usr/bin/env bash
 # **大量 seed の score だけを並列で集める**(相対評価の判定用)。
 # Usage: scripts/mass.sh <bin_name> [num_seeds | from:to | seedfile] [KEY=val ...]
-#   例:  scripts/mass.sh 01_ff 2000                 # seed 0..1999
-#        scripts/mass.sh 01_ff 5000:10000            # **holdout**(最終確認専用の未使用 seed)
-#        scripts/mass.sh 02_x 2000 AHC_THR=30        # env はタグとしてファイル名にも入る
-#        scripts/mass.sh 02_x run/seeds/c4_dev.txt   # 🔴 **seed リスト**(1行1seed)。下の「帯」を参照
+#   例:  scripts/mass.sh 001_ff 2000                 # seed 0..1999
+#        scripts/mass.sh 001_ff 5000:10000            # **holdout**(最終確認専用の未使用 seed)
+#        scripts/mass.sh 002_x 2000 AHC_THR=30        # env はタグとしてファイル名にも入る
+#        scripts/mass.sh 002_x run/seeds/c4_dev.txt   # 🔴 **seed リスト**(1行1seed)。下の「帯」を参照
 #
 # 🔴 **クラス別に設定を変える設計にしたら、掃引の seed も帯で割る**(knowledge/techniques/band-audit.md):
 #   作用域の外の seed は**平均 0・分散だけ**を持ち込むので、`t` 値が「1 / 作用域の割合」だけ目減りする

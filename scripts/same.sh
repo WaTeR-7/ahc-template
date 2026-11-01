@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # 2つのソルバの**出力が byte 単位で一致するか**を md5 で照合する。
 # Usage: scripts/same.sh <binA> <binB> [num_seeds]
-#   例:  A_ENV="AHC_NEW=0" scripts/same.sh 05_newmech 04_prev 20
+#   例:  A_ENV="AHC_NEW=0" scripts/same.sh 005_newmech 004_prev 20
 #
 # 何のためにあるか:
 #   新機構は「無効化した設定(AHC_X=0)で前版と出力が完全一致する」ことを確認してから有効化する。
@@ -10,7 +10,7 @@
 #
 # 使い方の型:
 #   A_ENV / B_ENV に各側の env を空白区切りで渡す(片側だけでもよい)。
-#     A_ENV="AHC_NEW=0" scripts/same.sh 05_newmech 04_prev 20   # 新機構 OFF vs 前版
+#     A_ENV="AHC_NEW=0" scripts/same.sh 005_newmech 004_prev 20   # 新機構 OFF vs 前版
 #
 # 決定性の自己チェック:
 #   **同じバイナリを2回走らせて出力が違えば、この照合自体が無意味**なので先に検査する。

@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# **計測版(`NNd_*.rs`)の stderr を大量 seed 分あつめる**。
+# **計測版(`NNNd_*.rs`)の stderr を大量 seed 分あつめる**。
 # Usage: scripts/diag.sh <bin_name> [num_seeds | from:to] [KEY=val ...]
 #   例:  scripts/diag.sh 12d_diag 1000 AHC_TL=100000
 #

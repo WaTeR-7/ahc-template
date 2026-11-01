@@ -40,6 +40,6 @@ echo "     └ 空・部門の行なしだと AGENTS.md の fail-closed で AI �
 echo "  2) 問題ページ(要ログイン+参加登録)を『完全な形で保存』→ $dest/problem/ に置く"
 echo "  3) cd $dest && scripts/fetch_tools.sh   # tools.zip をDL→展開→build→in生成"
 echo "  4) vis 出力に合わせ scripts/test.sh の SCORER を確認, docs/SETUP.md の問題/カルテを記入"
-echo "  5) cp src/bin/00_base.rs src/bin/01_<approach>.rs で着手(§1チェックリスト)"
+echo "  5) cp src/bin/000_base.rs src/bin/001_<approach>.rs で着手(§1チェックリスト)"
 echo "  6) 実行可能解ができたら docs/NOW.md の『設計上の選択』register を埋める"
 echo "     └ 行き詰まった時に戻る場所。負の連続は収束ではなく共通の上流前提を疑う合図"

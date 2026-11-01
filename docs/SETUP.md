@@ -54,7 +54,7 @@
 
 ## 4. リポジトリ / 実行
 
-- ソルバ: 外部クレート非依存の単一 `../src/bin/NN_<name>.rs`（提出はこの1ファイルを貼る）。
+- ソルバ: 外部クレート非依存の単一 `../src/bin/NNN_<name>.rs`（提出はこの1ファイルを貼る）。
 - 公式ツール: `../tools/`（gitignore。無ければ `../scripts/fetch_tools.sh`）。より多くの入力は `tools/` で
   `cargo run -r --bin gen seeds.txt`。⚠ **`gen` は seeds ファイルの*行番号*でファイル名を決める**
   ⇒ 追加生成は必ず `--dir <別ディレクトリ>` に出す。採点器は `../scripts/test.sh` の `SCORER` を編集。

@@ -8,7 +8,7 @@
 #![allow(dead_code)] // 骨格の道具は埋めるまで未使用。開発中は付けたままで良い。
 // AHC 解答の骨格。再利用部品は lib/ に「種類ごと1ファイル」で分割保持し、必要分をコピペして単一 .rs に組む。
 //   ・提出はこの1ファイルをそのまま貼る(外部クレート不可)。
-//   ・cp src/bin/00_base.rs src/bin/NN_<approach>.rs して各手法を書く(過去版は絶対に上書きしない)。
+//   ・cp src/bin/000_base.rs src/bin/NNN_<approach>.rs して各手法を書く(過去版は絶対に上書きしない)。
 //   ・部品を足すときは lib/<name>.rs の `mod` ブロックを丸ごと貼る。**lib/ が各部品の正**。
 //     下の io/rng/timer は毎回要るので貼り込んだ最小スタート(コピー元は lib/)。
 //     ※ io には バッチ入力 Scanner / 対話入力 Interactor / 共通出力 Writer がある。対話問題は Interactor を使う。
