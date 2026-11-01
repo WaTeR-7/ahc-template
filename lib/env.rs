@@ -1,5 +1,5 @@
 // env チューナブル読取り。パラメータ(TL/ビーム幅/温度…)を再コンパイル無しに掃引するため、
-// env で外出しする(CLAUDE.md 方針)。未設定/パース失敗なら default にフォールバック。
+// env で外出しする(AGENTS.md 方針)。未設定/パース失敗なら default にフォールバック。
 // 使い方: let w: usize = env::get("AHC_W", 20); let tl: u128 = env::get("AHC_TL", 1900);
 mod env {
     /// 環境変数 `key` を `T` にパースして返す。未設定・空・パース失敗はすべて `default`。

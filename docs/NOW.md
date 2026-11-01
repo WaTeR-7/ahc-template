@@ -2,7 +2,7 @@
 
 > 🔴 **このファイルは「盤面」＝ 常に現在。追記しない・古い記述は消すか訂正注記を付ける。**
 > 履歴は [`HISTORY.md`](HISTORY.md)、測定は [`EVIDENCE.md`](EVIDENCE.md)、前提は [`SETUP.md`](SETUP.md)、
-> 版は [`VERSIONS.md`](VERSIONS.md)。**規則は `../CLAUDE.md`、その根拠と失敗例は `../knowledge/rules/`**（同じことを両方に書かない）。
+> 版は [`VERSIONS.md`](VERSIONS.md)。**規則は `../AGENTS.md`、その根拠と失敗例は `../knowledge/rules/`**（同じことを両方に書かない）。
 > **目安 150 行** ── 超えたら台帳・辞書・測定を上の行き先へ押し出す（`../knowledge/rules/docs-layout.md`）。
 > 枠組みが反証されたら、**このファイルは名前を変えず**、中身を `frozen/<日付>-<何の盤面か>.md` へ
 > 切り出してから書き直す（`LOG`→`LOG2` 方式は既存の参照を全部腐らせる）。
@@ -17,7 +17,7 @@
 
 ## 序盤チェックリスト
 
-> **各項目の根拠・失敗例は `../knowledge/rules/approach.md`**（短い形は `../CLAUDE.md` §4）。**ここは進捗の欄。**
+> **各項目の根拠・失敗例は `../knowledge/rules/approach.md`**（短い形は `../AGENTS.md` §4）。**ここは進捗の欄。**
 
 - [ ] **`../knowledge/README.md` の索引を見る**（過去に**型が近い回**があればその分析を読む）
 - [ ] **`SETUP.md` の構造カルテ8軸を埋める**（実行可能解を書く*前*に。**軸1〜3で解法クラスがほぼ決まる**。

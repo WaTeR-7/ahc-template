@@ -19,9 +19,12 @@ clone は初回1回だけ。**コンテストごとの開始は `new.sh`** で�
 ~/ahc/template/new.sh ahc069     # ~/ahc/ahc069 を作り git init
 cd ~/ahc/ahc069
 # ---- 人手(AIに作業させる前に必ず) ----
-#  1) 本コンテストの AI 利用規約を problem/ai_guideline.txt に貼る
-#     └ 空だと CLAUDE.md の fail-closed で AI は「規約未読」だけ返して全停止する
-#  2) 問題ページ(要ログイン+参加登録)を「完全な形で保存」→ problem/ に置く
+#  1) コンテストページの「部門」タブで部門を選ぶ(部門制の回。With AI は AI を使う前に選ぶ)
+#     └ With AI → Human Only に変えられるのはコンテスト開始前だけ
+#  2) 本コンテストの AI 利用規約を problem/ai_guideline.txt に貼り、部門制の回は先頭に「部門: With AI」と書く
+#     └ 長期 AHC の規約: https://info.atcoder.jp/entry/long-ahc-llm-rules-ja
+#     └ 空・部門の行なしだと AGENTS.md の fail-closed で AI は 1 文だけ返して全停止する
+#  3) 問題ページ(要ログイン+参加登録)を「完全な形で保存」→ problem/ に置く
 scripts/fetch_tools.sh           # 保存HTML内のCDN URLから tools.zip をDL→build→in生成(全自動)
 # vis 出力に合わせ scripts/test.sh の SCORER を確認, NOW §2 を記入
 cp src/bin/00_base.rs src/bin/01_greedy.rs   # 1アプローチ=1ファイル(必要な部品は lib/ からコピペ)
@@ -53,14 +56,19 @@ AHC_ME=<user> python3 scripts/rank.py mass/SYS_new.csv mass/SYS_base.csv   # 何
 
 ## AIエージェントの前提
 
-このテンプレは **Claude Code(AI エージェント)で回す**前提で組んである。
+このテンプレは **Claude Code / Codex(AI エージェント)で回す**前提で組んである。
 
-- **方針**: **作業ルールは `CLAUDE.md`（短い形。根拠と過去の失敗例は `knowledge/rules/`）、そのコンテストの記録は `docs/`** と
-  棲み分ける(両方に書くと必ず片方が古くなる)。AI はセッション開始時に CLAUDE.md を読んで従う。
-  人間は README、AI は CLAUDE.md が入口。
-- **規約ガイド**: AHC の AI 利用規約は急速に変化する(縮小方向)ので、恒久テンプレに焼き込まない。
-  その回の規約を **`problem/ai_guideline.txt` に人が貼る** → `CLAUDE.md §0` がインポートする。
-  **未記入なら AI は「規約未読」とだけ返して全停止**(fail-closed で規約違反を防ぐ)。
+> **Claude Code は `AGENTS.md` を読むための条件がある**: v2.1.277 以上(Bedrock / Vertex / Foundry / LLM gateway / テレメトリ無効では v2.1.281 以上)で、
+> `/config` の Project instructions が AGENTS.md を読む設定であること。さらに **この repo と上位のディレクトリに `CLAUDE.md` / `CLAUDE.local.md` が無いこと**
+> (あると `AGENTS.md` は読まれず、§0 の規約ゲートごと効かなくなる)。読み込みは `/memory` で確かめられる。
+
+- **方針**: **作業ルールは `AGENTS.md`（短い形。根拠と過去の失敗例は `knowledge/rules/`）、そのコンテストの記録は `docs/`** と
+  棲み分ける(両方に書くと必ず片方が古くなる)。AI はセッション開始時に AGENTS.md を読んで従う。
+  人間は README、AI は AGENTS.md が入口。
+- **規約ガイド**: AHC の AI 利用規約は急速に変化する(向きも一定でない)ので、恒久テンプレに焼き込まない。
+  その回の規約を **`problem/ai_guideline.txt` に人が貼る**(部門制の回は先頭に `部門: <部門名>`) → `AGENTS.md §0` が読み込む。
+  **規約か部門が未記入なら AI は 1 文だけ返して全停止**(fail-closed で規約違反を防ぐ)。
+  ⚠ **長期 AHC の AI の全面利用は With AI 部門だけ**。部門を選ばなければ Human Only の順位表に載り、AI エージェントは使えない。
 - **AIに任せる範囲**: 「AI にどこまで任せるか(自動反復の可否など)」は**その回の規約が決める**。
   規約に従い、規約が触れない範囲はユーザーが主導する。規約が AI 利用を禁じるなら、AI は作業しない。
 
@@ -68,14 +76,13 @@ AHC_ME=<user> python3 scripts/rank.py mass/SYS_new.csv mass/SYS_base.csv   # 何
 
 | ファイル | 役割 |
 |---|---|
-| `CLAUDE.md` | AIエージェント向け**作業ルールの短い形**(前提/コード/進め方/検証と計測/記録の規律/git。**250 行まで**。根拠・失敗例つきの長い版は `knowledge/rules/` で、どの作業の前にどれを開くかの表が §1 にある)。§0 で `problem/ai_guideline.txt` をインポートし未記入なら全停止 |
-| `AGENTS.md` | **Codex / 他エージェントの入口**。「`CLAUDE.md` を読め」と読む順番とハーネス差分だけを書いた薄いシム。**ルール本文は写さない**(唯一の例外が §0 の規約ゲート ── fail-closed を成立させるため**機構だけ**再掲する。条文は写さない) |
-| `problem/ai_guideline.txt` | その回の AI 利用規約を人が貼る(空placeholderを追跡・中身は毎回貼替) |
+| `AGENTS.md` | AIエージェント向け**作業ルールの短い形**(前提/コード/進め方/検証と計測/記録の規律/git。**250 行・32 KiB まで**。根拠・失敗例つきの長い版は `knowledge/rules/` で、どの作業の前にどれを開くかの表が §1 にある)。§0 で `problem/ai_guideline.txt` を読み、規約か部門が未記入なら全停止。**Claude Code と Codex の共通の入口**で、`CLAUDE.md` は置かない |
+| `problem/ai_guideline.txt` | その回の AI 利用規約を人が貼る。部門制の回は先頭に `部門: <部門名>`(空placeholderを追跡・中身は毎回貼替) |
 | `src/bin/00_base.rs` | 基本部品(io/rng/timer)を貼った解答の最小スタート(追加部品は `lib/` からコピペ) |
 | `lib/` | **再利用部品**(io / timer / env / rng / grid / artic / matching / zobrist / prof / sprof)。種類ごと1ファイルの `mod` ブロックで、解答へは **`use` せずコピペ**。cargo の lib ターゲット `ahc_lib` として `cargo check`/`test` が通る＝検証済みの正本。一覧と使い分けは **[`lib/README.md`](lib/README.md)** |
-| `knowledge/` | **過去コンテストの蓄積**: `contests/`(参加記録) / `methods/`(**大枠の手法＝手持ちの一覧**) / `techniques/`(部品) / `rules/`(**`CLAUDE.md` の規則の長い版**) + 構造カルテ8軸(軸3 は 2 段)と索引。テンプレに同梱されるので**新しいコンテストの開始時に手元にある**。**正本はテンプレ側** ── 回が終わったら書いてここへ戻す |
+| `knowledge/` | **過去コンテストの蓄積**: `contests/`(参加記録) / `methods/`(**大枠の手法＝手持ちの一覧**) / `techniques/`(部品) / `rules/`(**`AGENTS.md` の規則の長い版**) + 構造カルテ8軸(軸3 は 2 段)と索引。テンプレに同梱されるので**新しいコンテストの開始時に手元にある**。**正本はテンプレ側** ── 回が終わったら書いてここへ戻す |
 | `scripts/` | **道具一式**(セットアップ / 走らせて測る / 判定する / **終了後に順位を直接測る** / 補助)。一覧と使い分けは **[`scripts/README.md`](scripts/README.md)** |
-| `docs/` | **このコンテストの記録**の雛形。**最初から役割ごとに分けてある**: `NOW.md`(盤面 ＝ チェックリスト/**register**/否定の棚/次の一手) / `SETUP.md`(前提 ＝ 問題/**構造カルテ8軸**/用語集/実行) / `EVIDENCE.md`(証拠 ＝ 測定 `EX###`/実ジャッジ校正) / `VERSIONS.md`・`HISTORY.md`(台帳)。地図と ID 凡例は `docs/README.md`。**方法論は `CLAUDE.md` 側**(二重に書かない) |
+| `docs/` | **このコンテストの記録**の雛形。**最初から役割ごとに分けてある**: `NOW.md`(盤面 ＝ チェックリスト/**register**/否定の棚/次の一手) / `SETUP.md`(前提 ＝ 問題/**構造カルテ8軸**/用語集/実行) / `EVIDENCE.md`(証拠 ＝ 測定 `EX###`/実ジャッジ校正) / `VERSIONS.md`・`HISTORY.md`(台帳)。地図と ID 凡例は `docs/README.md`。**方法論は `AGENTS.md` 側**(二重に書かない) |
 | `.gitignore` | /target /tools /out /rep /vis /truth と生成 *.html/*.pdf を無視。**`mass/` は生データを無視しつつ分母(`best.csv`/`ub.csv`)だけ追跡**。**problem/ は追跡**(private前提) |
 | `.claude/settings.json` | Claude Code の**プロジェクト設定**。`Write\|Edit` の PostToolUse フックで `scripts/md2pdf-hook.sh` を呼ぶ(記録の PDF を自動再生成。非同期) |
 | `.codex/hooks.json` | Codex 側の同じフック(`apply_patch` にマッチ)＋ **Stop フックで完了音**。音は `~/.claude/sounds/done.wav` → 無ければ Windows のビープ → 無ければ無音(`\|\| true` で必ず成功する) |

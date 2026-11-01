@@ -47,6 +47,6 @@
 - 探す順・範囲を変える高速化は乱数の列が変わるので、byte 一致の代わりに最適値の一致を assert する
   （→ [核の書き換えは assert で同値を取る](equivalence-by-assert.md) の実例 ③）。
 
-**昇格状況**: **→ `CLAUDE.md` 済**。
+**昇格状況**: **→ `AGENTS.md` 済**。
 
 **別名・関連**: statistical / sampling profiler（`perf record` と同じ原理。`perf` が入っていない環境・権限が無い環境でも動く）。

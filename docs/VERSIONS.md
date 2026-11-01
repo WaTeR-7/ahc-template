@@ -10,4 +10,4 @@
 - 🔴 **版に通番を振らない。ファイル名がそのまま ID**（別名を作ると二重管理になる。`../knowledge/rules/docs-layout.md`）。
 - 🔴 **1アプローチ = 1物理ファイル。過去の版を絶対に上書きしない。新しいレバーの既定は OFF。**
 - `判定` が負のものは **`NOW.md` の否定の棚へ**（前提つきで書く。負のまま流すと死蔵になる）。
-- 結果は `results.meta` の `bin / env / seeds` ごと引用する（比較の作法は `../CLAUDE.md` §5、長い版は `../knowledge/rules/measurement.md`）。
+- 結果は `results.meta` の `bin / env / seeds` ごと引用する（比較の作法は `../AGENTS.md` §5、長い版は `../knowledge/rules/measurement.md`）。

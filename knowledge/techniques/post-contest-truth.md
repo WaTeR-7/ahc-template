@@ -53,7 +53,7 @@ AHC_ME=<user> python3 scripts/rank.py mass/SYS_new.csv mass/SYS_base.csv
 - 副産物: 首位との差を**入力特徴で分解**できた（池の塊数 四分位で **7.0% → 15.5%**、`R` では平坦）
   ⇒ 「どこで負けているか」が構造の言葉で出る。
 
-**昇格状況**: **→ `CLAUDE.md` 済**（相対評価の判定 / 分母の規律）。道具は `scripts/fetch_truth.sh` と `scripts/rank.py`。
+**昇格状況**: **→ `AGENTS.md` 済**（相対評価の判定 / 分母の規律）。道具は `scripts/fetch_truth.sh` と `scripts/rank.py`。
 
 **別名・関連**: ground-truth backtesting。
 [測り方の条件がレバーの採否を反転させる](measurement-regime.md)（**この真値で「低並列＝ジャッジ」を校正する**）と対。

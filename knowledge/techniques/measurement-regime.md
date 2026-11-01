@@ -73,7 +73,7 @@
 
 **軸8 に「余裕はあるが裾が律速」と書いたら、この記事の手順に入る。**
 
-**昇格状況**: **→ `CLAUDE.md` 済**（「比較の作法」と「時間の扱い」）。`scripts/mass.sh` と `scripts/README.md` にも注記。
+**昇格状況**: **→ `AGENTS.md` 済**（「比較の作法」と「時間の扱い」）。`scripts/mass.sh` と `scripts/README.md` にも注記。
 
 **別名・関連**: measurement regime / benchmarking under contention。
 [核の書き換えは assert で同値を取る](equivalence-by-assert.md)（**測る前に「同じものを測っているか」を保証する側**）と対。
